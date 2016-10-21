@@ -6,3 +6,19 @@ build_*
 *.swp
 gear.sublime-*
 
+#repos
+.git
+*/.git
+*/.git*
+
+#clion
+.idea
+*/.idea
+
+#vim
+*/.#*
+.#*
+
+#temp files
+*~
+.*~

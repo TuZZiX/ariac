@@ -15,5 +15,7 @@ rosrun osrf_gear gear.py -o /tmp -f `rospack find gear_example`/config/sample_ge
 
 
 rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf2.yaml `rospack find gear_example`/config/sample_gear_conf.yaml -o /tmp
+all parts
+rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf1.yaml `rospack find gear_example`/config/sample_gear_conf.yaml -o /tmp
 
 rosrun gear_example gear_example_node
