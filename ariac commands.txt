@@ -10,7 +10,7 @@ Run world with preconfiguration:
 rosrun osrf_gear gear.py -o /tmp -f `rospack find osrf_gear`/config/sample.yaml
 
 Run world with your own config: 
-rosrun osrf_gear gear.py -o /tmp -f `rospack find gear_example`/config/sample_gear_conf.yaml
+rosrun osrf_gear gear.py -o /tmp -f `rospack find cwru_ariac`/config/ariac_conf.yaml
 								↑ make this your config, see https://bitbucket.org/osrf/ariac/wiki/configuration_spec
 
 
