@@ -35,6 +35,7 @@ void joint_state_callback(const sensor_msgs::JointState::ConstPtr & joint_state_
                              "Joint States (throttled to 0.1 Hz):\n" << *joint_state_msg);
     // ROS_INFO_STREAM("Joint States:\n" << *joint_state_msg);
     current_joint_states = *joint_state_msg;
+    called = true;
 }
 
 int main(int argc, char** argv)
@@ -51,8 +52,9 @@ int main(int argc, char** argv)
     double angle;
     vector<double> my_pose;
     while(!called) {
+        ROS_INFO("Waiting for joint feedback...");
         ros::spinOnce();
-        ros::Duration(0.05).sleep();
+        ros::Duration(0.1).sleep();
     }
     my_pose.resize(current_joint_states.name.size(), 0.0);
     for (int i = 0; i < my_pose.size(); ++i) {
