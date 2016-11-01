@@ -9,6 +9,8 @@
 
 class RobotPlanner: public AriacBase {
 public:
+    double planningTime;
+
     RobotPlanner(ros::NodeHandle& nodeHandle);
     bool planToHome(double& executingTime);
     bool plan(geometry_msgs::Pose pose, double& executingTime);

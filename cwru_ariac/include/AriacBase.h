@@ -94,6 +94,7 @@ const double defaultPartsSize[totalPartsTypes][2] = {{0.059,0.052}, {0.078425,0.
 class AriacBase {
 public:
     unordered_map<string, PartType> defaultParts;
+
     Bin defaultBin;
 
     double AGVBoundBoxXmin[totalAGVs];
@@ -119,29 +120,31 @@ public:
         defaultBin.size.x = 0.6;
         defaultBin.size.y = 0.6;
 
-        AGVBoundBoxXmin[0] = 0.063777;
-        AGVBoundBoxYmin[0] = 2.813719;
-        AGVBoundBoxXmax[0] = 0.536337;
-        AGVBoundBoxYmax[0] = 3.487122;
+        AGVBoundBoxXmin[0] = 0.0;
+        AGVBoundBoxYmin[0] = 2.7;
+        AGVBoundBoxXmax[0] = 0.7;
+        AGVBoundBoxYmax[0] = 3.9;
 
-        AGVBoundBoxXmin[1] = 0.908119;
-        AGVBoundBoxYmin[1] = -4.805823;
-        AGVBoundBoxXmax[1] = 1.534927;
-        AGVBoundBoxYmax[1] = 5.765022;
+        AGVBoundBoxXmin[1] = 0.0;
+        AGVBoundBoxYmin[1] = 0.0;
+        AGVBoundBoxXmax[1] = 0.0;
+        AGVBoundBoxYmax[1] = 0.0;
 
-        ConveyorBoxXmin = 0.908119;
-        ConveyorBoxYmin = -4.805823;
-        ConveyorBoxXmax = 1.534927;
-        ConveyorBoxYmax = 5.765022;
+        ConveyorBoundBoxXmin = 0.9;
+        ConveyorBoundBoxYmin = -4.8;
+        ConveyorBoundBoxXmax = 1.6;
+        ConveyorBoundBoxYmax = 5.8;
 
-        BinBoundBoxXmin[0] = 0.908119;
-        BinBoundBoxYmin[0] = -4.805823;
-        BinBoundBoxXmax[0] = 1.534927;
-        BinBoundBoxYmax[0] = 5.765022;
+        BinBoundBoxXmin[0] = 0.0;
+        BinBoundBoxYmin[0] = 0.0;
+        BinBoundBoxXmax[0] = 0.0;
+        BinBoundBoxYmax[0] = 0.0;
 
+        for (int j = 0; j < totalBins; ++j) {
 
+        }
         PartType singlePart;
-        for (int i = 0; i < totalPartsType; ++i) {
+        for (int i = 0; i < totalPartsTypes; ++i) {
             singlePart.name = defaultPartsName[i];
             singlePart.size.x = defaultPartsSize[i][0];
             singlePart.size.y = defaultPartsSize[i][1];

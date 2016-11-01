@@ -1,7 +1,7 @@
 arm:
   type: ur10
   initial_joint_states:
-    linear_arm_actuator_joint: 1
+    linear_arm_actuator_joint: 0
 sensors:
   logical_camera_1:
     type: logical_camera

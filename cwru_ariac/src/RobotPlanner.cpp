@@ -5,7 +5,7 @@
 #include "RobotPlanner.h"
 
 RobotPlanner::RobotPlanner(ros::NodeHandle &nodeHandle): nh_( nodeHandle ){
-
+    planningTime = 0.5;
 }
 
 bool RobotPlanner::plan(geometry_msgs::Pose pose, double &executingTime) {

@@ -4,7 +4,7 @@
 
 #include "CameraEstimator.h"
 
-CameraEstimator::CameraEstimator(ros::NodeHandle nodeHandle, RobotPlanner &planner) : nh_(nodeHandle),planner_(&planner) {
+CameraEstimator::CameraEstimator(ros::NodeHandle nodeHandle) : nh_(nodeHandle) {
     cameraSubscriber = nh_.subscribe("/ariac/logical_camera_1", 10,
                                      &CameraEstimator::cameraCallback, this);
     distanceTolerance = 0.01;
@@ -25,6 +25,7 @@ void CameraEstimator::cameraCallback(const osrf_gear::LogicalCameraImage::ConstP
         inView[k].pose.pose.position.x += inView[k].linear.x * dt;
         inView[k].pose.pose.position.y += inView[k].linear.y * dt;
         inView[k].pose.pose.position.z += inView[k].linear.z * dt;
+        inView[k].pose.header.stamp = ros::Time::now();
     }
     // TODO refactor to: match all exist object first, then all untraceable object then add new object
     // TODO change inView type to hash map
@@ -107,6 +108,12 @@ void CameraEstimator::splitLocation() {
     onGround.clear();
     for (int i = 0; i < inView.size(); ++i) {
         if (ConveyorBoundBoxXmin<=inView[i].pose.pose.position.x && inView[i].pose.pose.position.x<=ConveyorBoundBoxXmax || ConveyorBoundBoxYmin <= inView[i].pose.pose.position.y && inView[i].pose.pose.position.y <= ConveyorBoundBoxYmax) {
+            if (inView[i].traceable == false){
+                inView[i].traceable = true;
+                inView[i].linear.x = 0;
+                inView[i].linear.y = 0;
+                inView[i].linear.z = 0;
+            }
             onConveyor.push_back(inView[i]);
             continue;
         }
