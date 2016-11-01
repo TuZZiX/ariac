@@ -7,8 +7,22 @@
 
 #include <AriacBase.h>
 
-class OrderManager {
+class OrderManager:AriacBase {
+public:
+    OrderManager(ros::NodeHandle nodeHandle);
 
+    vector<osrf_gear::Goal> orders;
+
+    void startCompetition();
+    void submitOrder(osrf_gear::Goal order);
+    bool isCompetitionEnd();
+    double getCurrentScore();
+
+    double scoreFunction();
+
+private:
+    ros::Time startTime;
+    
 };
 
 

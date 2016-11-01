@@ -97,6 +97,8 @@ public:
 
     Bin defaultBin;
 
+    Eigen::Vector3d AGVBaseCoordinate[totalAGVs];
+
     double AGVBoundBoxXmin[totalAGVs];
     double AGVBoundBoxYmin[totalAGVs];
     double AGVBoundBoxXmax[totalAGVs];
@@ -114,6 +116,8 @@ public:
 
 
     AriacBase() {
+
+        AGVBaseCoordinate[0] = {0.12, 3.46,0.75};
         defaultBin.name = "Bin";
         defaultBin.grid.x = 60;
         defaultBin.grid.y = 60;
