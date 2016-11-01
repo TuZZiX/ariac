@@ -47,6 +47,7 @@ using namespace Eigen;
 
 const int gridNumber = 60;
 
+// TODO change types to ROS message types
 typedef struct Grid {
     int x;
     int y;
@@ -64,6 +65,7 @@ typedef struct PartType {
 
 typedef struct Part {
     PartType type;
+    int id;
     bool traceable = false;
     geometry_msgs::PoseStamped pose;
     geometry_msgs::Vector3 linear;
@@ -81,11 +83,12 @@ typedef struct Bin {
     int priority;
 } Bin;
 
-const int totalPartsType = 8;
+const int totalPartsTypes = 8;
+const int totalAGVs = 8;
 const int totalBins = 8;
 const double averageCost = 1000;
-const string defaultPartsName[totalPartsType] = {"piston_rod_part", "gear_part", "pulley_part", "gasket_part", "part1", "part2", "part3", "part4"};
-const double defaultPartsSize[totalPartsType][2] = {{0.059,0.052}, {0.078425,0.078425}, {0.23392,0.23392}, {0.31442,0.15684}, {0.3,0.1}, {0.06,0.015}, {0.13,0.07}, {0.09,0.06}};
+const string defaultPartsName[totalPartsTypes] = {"piston_rod_part", "gear_part", "pulley_part", "gasket_part", "part1", "part2", "part3", "part4"};
+const double defaultPartsSize[totalPartsTypes][2] = {{0.059,0.052}, {0.078425,0.078425}, {0.23392,0.23392}, {0.31442,0.15684}, {0.3,0.1}, {0.06,0.015}, {0.13,0.07}, {0.09,0.06}};
 
 // this class is used to storage some basic information of the competition and common algorithms.
 class AriacBase {
@@ -93,12 +96,49 @@ public:
     unordered_map<string, PartType> defaultParts;
     Bin defaultBin;
 
+    double AGVBoundBoxXmin[totalAGVs];
+    double AGVBoundBoxYmin[totalAGVs];
+    double AGVBoundBoxXmax[totalAGVs];
+    double AGVBoundBoxYmax[totalAGVs];
+
+    double ConveyorBoundBoxXmin;
+    double ConveyorBoundBoxYmin;
+    double ConveyorBoundBoxXmax;
+    double ConveyorBoundBoxYmax;
+
+    double BinBoundBoxXmin[totalBins];
+    double BinBoundBoxYmin[totalBins];
+    double BinBoundBoxXmax[totalBins];
+    double BinBoundBoxYmax[totalBins];
+
+
     AriacBase() {
         defaultBin.name = "Bin";
         defaultBin.grid.x = 60;
         defaultBin.grid.y = 60;
         defaultBin.size.x = 0.6;
         defaultBin.size.y = 0.6;
+
+        AGVBoundBoxXmin[0] = 0.063777;
+        AGVBoundBoxYmin[0] = 2.813719;
+        AGVBoundBoxXmax[0] = 0.536337;
+        AGVBoundBoxYmax[0] = 3.487122;
+
+        AGVBoundBoxXmin[1] = 0.908119;
+        AGVBoundBoxYmin[1] = -4.805823;
+        AGVBoundBoxXmax[1] = 1.534927;
+        AGVBoundBoxYmax[1] = 5.765022;
+
+        ConveyorBoxXmin = 0.908119;
+        ConveyorBoxYmin = -4.805823;
+        ConveyorBoxXmax = 1.534927;
+        ConveyorBoxYmax = 5.765022;
+
+        BinBoundBoxXmin[0] = 0.908119;
+        BinBoundBoxYmin[0] = -4.805823;
+        BinBoundBoxXmax[0] = 1.534927;
+        BinBoundBoxYmax[0] = 5.765022;
+
 
         PartType singlePart;
         for (int i = 0; i < totalPartsType; ++i) {

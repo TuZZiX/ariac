@@ -6,28 +6,34 @@
 #define CWRU_ARIAC_CAMERAESTIMATOR_H
 
 #include <AriacBase.h>
+#include <RobotPlanner.h>
 
 class CameraEstimator: public AriacBase {
 public:
     double distanceTolerance;
     double untraceableTolerance;
     Parts inView;
-    Parts onConvey;
-    Parts onAGV;
+    Parts onGround;
+    Parts onConveyor;
+    Parts onAGV[totalAGVs];
     Parts onBin[totalBins];
 
-    CameraEstimator(ros::NodeHandle nodeHandle);
+    CameraEstimator(ros::NodeHandle nodeHandle, RobotPlanner &planner);
 
-    geometry_msgs::Pose estimate(Part object);
+    void estimatePickTime(Part part);
+    Part getClosestPart(geometry_msgs::Pose endEffector);
+    Part getClosestPartAccurate(geometry_msgs::Pose endEffector);
 
 private:
     ros::NodeHandle nh_;
     ros::Subscriber cameraSubscriber;
+    RobotPlanner* planner_;
     void cameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr & image_msg);
+    void splitLocation();
     tf::TransformListener tf_listener;
     tf::StampedTransform transform;
     ros::Time lastTime;
-
+    int assigndID;
 };
 
 
