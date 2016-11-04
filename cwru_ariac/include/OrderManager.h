@@ -7,22 +7,36 @@
 
 #include <AriacBase.h>
 
-class OrderManager:AriacBase {
+class OrderManager: public AriacBase {
 public:
     OrderManager(ros::NodeHandle nodeHandle);
 
     vector<osrf_gear::Goal> orders;
 
-    void startCompetition();
-    void submitOrder(osrf_gear::Goal order);
-    bool isCompetitionEnd();
-    double getCurrentScore();
+    bool startCompetition();
+    bool submitOrder(int AGV, osrf_gear::Kit kit);
+    bool isCompetitionEnd() {
+        return (competitionState == "done");
+    }
+    double getCurrentScore() {
+        return score;
+    }
 
-    double scoreFunction();
+    double scoreFunction(double TT);
 
 private:
+    ros::NodeHandle nh_;
     ros::Time startTime;
-    
+    ros::Subscriber orderSubscriber;
+    ros::Subscriber scoreSubscriber;
+    ros::Subscriber competitionStateSubscriber;
+    ros::ServiceClient AGV1Client;
+    ros::ServiceClient AGV2Client;
+    string competitionState;
+    double score;
+    void orderCallback(const osrf_gear::Goal::ConstPtr & goal_msg);
+    void scoreCallback(const std_msgs::Float32::ConstPtr & msg);
+    void competitionStateCallback(const std_msgs::String::ConstPtr & msg);
 };
 
 

@@ -26,8 +26,8 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 # Libraries: uncomment the following and edit arguments to create a new library
 # cs_add_library(my_lib src/my_lib.cpp)
-#cs_add_library(FakeHeaderLib include/AriacBase.h include/CameraEstimator.h include/RobotPlanner.h include/AGVManager.h include/BinManager.h include/ConveyorManager.h include/GlobalManager.h include/OrderManager.h)
-cs_add_library(AriacLib src/RobotPlanner.cpp src/CameraEstimator.cpp src/AGVManager.cpp src/BinManager.cpp src/ConveyorManager.cpp src/GlobalManager.cpp src/OrderManager.cpp)
+#cs_add_library(FakeHeaderLib include/AriacBase.h include/CameraEstimator.h include/RobotPlanner.h include/BinManager.h include/ConveyorManager.h include/GlobalManager.h include/OrderManager.h)
+cs_add_library(AriacLib src/RobotPlanner.cpp src/CameraEstimator.cpp src/BinManager.cpp src/ConveyorManager.cpp src/GlobalManager.cpp src/OrderManager.cpp)
 
 
 # Executables: uncomment the following and edit arguments to compile new nodes

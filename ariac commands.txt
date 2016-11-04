@@ -19,5 +19,9 @@ all parts
 rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf1.yaml `rospack find gear_example`/config/sample_gear_conf.yaml -o /tmp
 
 rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf2.yaml `rospack find gear_example`/config/sample_gear_conf.yaml -o /tmp
+Run this:
+rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf2.yaml `rospack find cwru_ariac`/config/ariac_conf.yaml
 
-rosrun gear_example gear_example_node
+rosrun cwru_ariac gear_example_node
+
+rosrun cwru_ariac pose_tunner

@@ -9,7 +9,7 @@
 #include <CameraEstimator.h>
 #include <RobotPlanner.h>
 
-class ConveyorManager:AriacBase {
+class ConveyorManager: public AriacBase {
 public:
     ConveyorManager(ros::NodeHandle nodeHandle, CameraEstimator &estimator, RobotPlanner &planner);
     double extendSearchRange;

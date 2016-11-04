@@ -41,6 +41,9 @@
 #include <osrf_gear/Goal.h>
 #include <osrf_gear/LogicalCameraImage.h>
 #include <osrf_gear/Proximity.h>
+#include <osrf_gear/AGVControl.h>
+#include <osrf_gear/VacuumGripperControl.h>
+#include <osrf_gear/VacuumGripperState.h>
 
 using namespace std;
 using namespace Eigen;

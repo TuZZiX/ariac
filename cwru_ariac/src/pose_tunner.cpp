@@ -12,6 +12,7 @@ bool called = false;
 void send_arm_command(vector<double> joints) {
     // Create a message to send.
     trajectory_msgs::JointTrajectory msg;
+    msg.header.stamp = ros::Time::now();
     // Copy the joint names from the msg off the '/ariac/joint_states' topic.
     msg.joint_names = current_joint_states.name;
     // Create one point in the trajectory.
@@ -23,7 +24,7 @@ void send_arm_command(vector<double> joints) {
         msg.points[0].positions[i] = joints[i];
     }
     // How long to take getting to the point (floating point seconds).
-    msg.points[0].time_from_start = ros::Duration(0.1);
+    msg.points[0].time_from_start = ros::Duration(0.2);
     ROS_INFO_STREAM("Sending command:\n" << msg);
     joint_trajectory_publisher.publish(msg);
 }
@@ -31,8 +32,6 @@ void send_arm_command(vector<double> joints) {
 
 void joint_state_callback(const sensor_msgs::JointState::ConstPtr & joint_state_msg)
 {
-    ROS_INFO_STREAM_THROTTLE(10,
-                             "Joint States (throttled to 0.1 Hz):\n" << *joint_state_msg);
     // ROS_INFO_STREAM("Joint States:\n" << *joint_state_msg);
     current_joint_states = *joint_state_msg;
     called = true;
@@ -54,24 +53,33 @@ int main(int argc, char** argv)
     while(!called) {
         ROS_INFO("Waiting for joint feedback...");
         ros::spinOnce();
-        ros::Duration(0.1).sleep();
-    }
-    my_pose.resize(current_joint_states.name.size(), 0.0);
-    for (int i = 0; i < my_pose.size(); ++i) {
-        my_pose = current_joint_states.position;
+        ros::Duration(0.2).sleep();
     }
 
     while (ros::ok()) {
-        ROS_WARN("Current joints: [%f, %f, %f, %f, %f, %f, %f]",
-                 my_pose[0], my_pose[1], my_pose[2], my_pose[3],
-                 my_pose[4], my_pose[5], my_pose[6]);
-        std::cout << "Joint number:";
+        my_pose.resize(current_joint_states.name.size(), 0.0);
+        for (int i = 0; i < my_pose.size(); ++i) {
+            my_pose = current_joint_states.position;
+        }
+        ROS_WARN("Current joints: {\n    [0]%s:\t\t\t%f, \n    [1]%s:\t%f, \n    [2]%s:\t\t%f, \n    [3]%s:\t\t%f, \n"
+                         "    [4]%s:\t\t\t%f, \n    [5]%s:\t\t\t%f, \n    [6]%s:\t\t\t%f}",
+                 current_joint_states.name[0].c_str(), my_pose[0], current_joint_states.name[1].c_str(), my_pose[1],
+                 current_joint_states.name[2].c_str(), my_pose[2], current_joint_states.name[3].c_str(), my_pose[3],
+                 current_joint_states.name[4].c_str(), my_pose[4], current_joint_states.name[5].c_str(), my_pose[5],
+                 current_joint_states.name[6].c_str(), my_pose[6]);
+        std::cout << "Select joint number:";
         std::cin >> joint;
-        std::cout << "Inc/dec angles:";
+        std::cout << "Increase angles (can be negative): ";
         std::cin >> angle;
         my_pose[joint] += angle;
         send_arm_command(my_pose);
-        ros::Duration(0.2).sleep();                           // wait for finish
+        ros::Duration(0.2).sleep();                         // wait for finish
+        ros::spinOnce();
+        called = false;
+        while(!called) {
+            ros::spinOnce();
+            ros::Duration(0.02).sleep();
+        }
     }
     return 0;
 }
