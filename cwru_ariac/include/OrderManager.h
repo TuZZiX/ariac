@@ -22,7 +22,7 @@ public:
         return score;
     }
 
-    double scoreFunction(double TT);
+    double scoreFunction(double TC, double TT);
 
 private:
     ros::NodeHandle nh_;

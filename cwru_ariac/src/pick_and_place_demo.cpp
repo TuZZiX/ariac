@@ -1,8 +1,9 @@
 //
-// Created by shipei on 10/25/16.
+// Created by shipei on 11/8/16.
 //
 
 #include <AriacBase.h>
+#include <OrderManager.h>
 
 ros::Publisher joint_trajectory_publisher;
 sensor_msgs::JointState current_joint_states;
@@ -24,11 +25,10 @@ void sendArmCommand(vector<double> joints) {
         msg.points[0].positions[i] = joints[i];
     }
     // How long to take getting to the point (floating point seconds).
-    msg.points[0].time_from_start = ros::Duration(0.2);
+    msg.points[0].time_from_start = ros::Duration(1);
     ROS_INFO_STREAM("Sending command:\n" << msg);
     joint_trajectory_publisher.publish(msg);
 }
-
 
 void joint_state_callback(const sensor_msgs::JointState::ConstPtr & joint_state_msg)
 {
@@ -37,18 +37,28 @@ void joint_state_callback(const sensor_msgs::JointState::ConstPtr & joint_state_
     called = true;
 }
 
+void sendCommand(vector<double> my_pose) {
+    sendArmCommand(my_pose);
+    ros::Duration(1).sleep();                         // wait for finish
+    ros::spinOnce();
+    called = false;
+    while(!called) {
+        ros::spinOnce();
+        ros::Duration(0.02).sleep();
+    }
+
+}
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "pose_tunner");
-
+    ros::init(argc, argv, "pick_and_place_demo");
     ros::NodeHandle nh;                                 // standard ros node handle
     ros::Subscriber joint_state_subscriber = nh.subscribe(
             "/ariac/joint_states", 10,
             &joint_state_callback);
     joint_trajectory_publisher = nh.advertise<trajectory_msgs::JointTrajectory>(
             "/ariac/arm/command", 10);
-    int joint;
-    double angle;
+
+    OrderManager comp(nh);
     vector<double> my_pose;
     while(!called) {
         ROS_INFO("Waiting for joint feedback...");
@@ -56,30 +66,22 @@ int main(int argc, char** argv)
         ros::Duration(0.2).sleep();
     }
 
-    while (ros::ok()) {
-        my_pose.resize(current_joint_states.name.size(), 0.0);
-        for (int i = 0; i < my_pose.size(); ++i) {
-            my_pose = current_joint_states.position;
-        }
-        ROS_WARN("Current joints: {\n    [0]%s:\t\t\t%f, \n    [1]%s:\t%f, \n    [2]%s:\t\t%f, \n    [3]%s:\t\t%f, \n"
-                         "    [4]%s:\t\t\t%f, \n    [5]%s:\t\t\t%f, \n    [6]%s:\t\t\t%f}",
-                 current_joint_states.name[0].c_str(), my_pose[0], current_joint_states.name[1].c_str(), my_pose[1],
-                 current_joint_states.name[2].c_str(), my_pose[2], current_joint_states.name[3].c_str(), my_pose[3],
-                 current_joint_states.name[4].c_str(), my_pose[4], current_joint_states.name[5].c_str(), my_pose[5],
-                 current_joint_states.name[6].c_str(), my_pose[6]);
-        std::cout << "Select joint number:";
-        std::cin >> joint;
-        std::cout << "Increase angles (can be negative): ";
-        std::cin >> angle;
-        my_pose[joint] += angle;
-        sendArmCommand(my_pose);
-        ros::Duration(0.2).sleep();                         // wait for finish
-        ros::spinOnce();
-        called = false;
-        while(!called) {
-            ros::spinOnce();
-            ros::Duration(0.02).sleep();
-        }
+    comp.startCompetition();
+    ROS_INFO("Competition started!");
+    ros::Duration(19).sleep();
+    my_pose.resize(current_joint_states.name.size(), 0.0);
+    for (int i = 0; i < my_pose.size(); ++i) {
+        my_pose = current_joint_states.position;
     }
+    my_pose[0] = 1.288514;
+    my_pose[1] = 1.962313;
+    my_pose[2] = -0.623798;
+    my_pose[3] = 0.134005;
+    my_pose[4] = 4.051464;
+    my_pose[5] = -1.527353;
+    my_pose[6] = -3.179198;
+
+    sendCommand(my_pose);
+    ros::Duration(0.2).sleep();
     return 0;
 }

@@ -85,8 +85,8 @@ bool OrderManager::submitOrder(int AGV, osrf_gear::Kit kit) {
     return false;
 }
 
-double OrderManager::scoreFunction(double TT) {
-    double TC = 1;
+double OrderManager::scoreFunction(double TC, double TT) {
+    //double TC = 1;
     double AC = 1;
     //double TT;
     double AT = 1;
