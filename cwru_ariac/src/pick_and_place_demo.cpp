@@ -57,7 +57,7 @@ int main(int argc, char** argv)
             &joint_state_callback);
     joint_trajectory_publisher = nh.advertise<trajectory_msgs::JointTrajectory>(
             "/ariac/arm/command", 10);
-
+    ros::ServiceClient gripper = nh.serviceClient<osrf_gear::VacuumGripperControl>("/ariac/gripper/control");
     OrderManager comp(nh);
     vector<double> my_pose;
     while(!called) {
@@ -65,14 +65,25 @@ int main(int argc, char** argv)
         ros::spinOnce();
         ros::Duration(0.2).sleep();
     }
+    if (!gripper.exists()) {
+        gripper.waitForExistence();
+    }
 
-    comp.startCompetition();
-    ROS_INFO("Competition started!");
-    ros::Duration(19).sleep();
+    osrf_gear::VacuumGripperControl grab;
+    osrf_gear::VacuumGripperControl release;
+
+    grab.request.enable = 1;
+    release.request.enable = 0;
     my_pose.resize(current_joint_states.name.size(), 0.0);
     for (int i = 0; i < my_pose.size(); ++i) {
         my_pose = current_joint_states.position;
     }
+
+    comp.startCompetition();
+    ROS_INFO("Competition started!");
+
+    ros::Duration(19).sleep();
+
     my_pose[0] = 1.288514;
     my_pose[1] = 1.962313;
     my_pose[2] = -0.623798;
@@ -80,8 +91,22 @@ int main(int argc, char** argv)
     my_pose[4] = 4.051464;
     my_pose[5] = -1.527353;
     my_pose[6] = -3.179198;
-
     sendCommand(my_pose);
-    ros::Duration(0.2).sleep();
+
+    ros::Duration(0.5).sleep();
+    gripper.call(grab);
+    ros::Duration(0.5).sleep();
+
+    my_pose[0] = 0.988514;
+    my_pose[1] = 1.962313;
+    my_pose[2] = -1.023798;
+    my_pose[3] = 0.134005;
+    my_pose[4] = 4.051464;
+    my_pose[5] = -1.527353;
+    my_pose[6] = -3.179198;
+    sendCommand(my_pose);
+
+    gripper.call(release);
+
     return 0;
 }
