@@ -16,8 +16,10 @@ public:
     Parts onConveyor;
     Parts onAGV[totalAGVs];
     Parts onBin[totalBins];
+    string worldFrame;
+    string cameraFrame;
 
-    CameraEstimator(ros::NodeHandle nodeHandle);
+    CameraEstimator(ros::NodeHandle nodeHandle, string cameraTopic = "/ariac/logical_camera_1");
 
 private:
     ros::NodeHandle nh_;

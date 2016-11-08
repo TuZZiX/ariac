@@ -6,8 +6,18 @@
 #define CWRU_ARIAC_BINMANAGER_H
 
 #include <AriacBase.h>
+#include <CameraEstimator.h>
 
-class BinManager {
+
+class BinManage: public AriacBase {
+public:
+    BinManage(ros::NodeHandle nodeHandle);
+    bool updateBin(Parts parts, int binNum);
+    bool getBestLocation(PartType part, geometry_msgs::Pose &bestLocation);
+    bool getListLocation(PartType part, vector<geometry_msgs::Pose> &bestLocation);
+
+    vector<Bin> bins;
+private:
 
 };
 

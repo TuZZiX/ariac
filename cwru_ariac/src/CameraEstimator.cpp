@@ -4,12 +4,15 @@
 
 #include "CameraEstimator.h"
 
-CameraEstimator::CameraEstimator(ros::NodeHandle nodeHandle) : nh_(nodeHandle) {
-    cameraSubscriber = nh_.subscribe("/ariac/logical_camera_1", 10,
+CameraEstimator::CameraEstimator(ros::NodeHandle nodeHandle, string cameraTopic) : nh_(nodeHandle) {
+    cameraSubscriber = nh_.subscribe(cameraTopic, 10,
                                      &CameraEstimator::cameraCallback, this);
     distanceTolerance = 0.01;
     untraceableTolerance = 0.1;
     assigndID = 1;
+
+    worldFrame = "/world";
+    cameraFrame = "/logical_camera_1_frame";
 }
 
 void CameraEstimator::cameraCallback(const osrf_gear::LogicalCameraImage::ConstPtr &image_msg) {
@@ -33,13 +36,13 @@ void CameraEstimator::cameraCallback(const osrf_gear::LogicalCameraImage::ConstP
         bool flag = false;
         nextPart.type = defaultParts.find(image_msg->models[i].type)->second;
         inPose.pose = image_msg->models[i].pose;
-        inPose.header.frame_id = "/logical_camera_1_frame";
+        inPose.header.frame_id = cameraFrame;
         inPose.header.stamp = ros::Time::now();
         bool tferr = true;
         while (tferr) {
             tferr = false;
             try {
-                tf_listener.transformPose("/world", inPose, outPose);
+                tf_listener.transformPose(worldFrame, inPose, outPose);
             } catch (tf::TransformException &exception) {
                 ROS_ERROR("%s", exception.what());
                 tferr = true;
@@ -65,17 +68,15 @@ void CameraEstimator::cameraCallback(const osrf_gear::LogicalCameraImage::ConstP
         }
         // try to find untraceable object by nearest distance
         if (!flag) {
-            double lastDistance;
             for (int j = 0; j < inView.size(); ++j) {
                 distance = euclidianDistance(nextPart.pose.pose.position, inView[j].pose.pose.position);
                 if ((!inView[j].traceable) && (distance < untraceableTolerance) && (nextPart.type.name == inView[j].type.name)) {
-                    if (distance < lastDistance) {
+                    if ((distance < untraceableTolerance) && (nextPart.type.name == inView[j].type.name)) {
                         nextPart.linear.x = (nextPart.pose.pose.position.x - inView[j].pose.pose.position.x)/dt;
                         nextPart.linear.y = (nextPart.pose.pose.position.y - inView[j].pose.pose.position.y)/dt;
                         nextPart.linear.z = (nextPart.pose.pose.position.z - inView[j].pose.pose.position.z)/dt;
                         nextPart.traceable = true;
                         nextPart.id = inView[i].id;
-                        lastDistance = distance;
                         inView.erase(inView.begin()+j);
                         flag = true;
                         break;
@@ -108,7 +109,7 @@ void CameraEstimator::splitLocation() {
     onGround.clear();
     for (int i = 0; i < inView.size(); ++i) {
         if (ConveyorBoundBoxXmin<=inView[i].pose.pose.position.x && inView[i].pose.pose.position.x<=ConveyorBoundBoxXmax || ConveyorBoundBoxYmin <= inView[i].pose.pose.position.y && inView[i].pose.pose.position.y <= ConveyorBoundBoxYmax) {
-            if (inView[i].traceable == false){
+            if (!inView[i].traceable){
                 inView[i].traceable = true;
                 inView[i].linear.x = 0;
                 inView[i].linear.y = 0;

@@ -12,6 +12,8 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
+#include <boost/functional/hash.hpp>
 
 #include <eigen3/Eigen/Eigen>
 #include <eigen3/Eigen/Dense>
@@ -51,40 +53,90 @@ using namespace Eigen;
 const int gridNumber = 60;
 
 // TODO change types to ROS message types
-typedef struct Grid {
-    int x;
-    int y;
-} Grid;
-typedef struct Dimension {
-    double x;
-    double y;
-} Dimension;
 
-typedef struct PartType {
+typedef pair<int, int> Grid;
+typedef pair<double, double> Dimension;
+//typedef map<Grid, bool> GridMap;
+enum Direction {
+    top, bottom, left, right,
+    topLeft, topRight, bottomLeft, bottomRight
+};
+
+class GridMap: public unordered_set<Grid, boost::hash<pair<int, int>>> {
+public:
+    bool checkCollision(Grid grid) {
+        return find(grid)==end();
+    }
+
+    bool addGrids(Grid start, Grid size, Direction direction) {
+        Grid A;
+        switch (direction) {
+            case topLeft:
+                A.first = start.first - size.first;
+                A.second = start.second;
+                break;
+            case topRight:
+                A = start;
+                break;
+            case bottomLeft:
+                A.first = start.first - size.first;
+                A.second = start.second - size.second;
+                break;
+            case bottomRight:
+                A.first = start.first;
+                A.second = start.second - size.second;
+                break;
+        }
+        return addGrids(A, size);
+    }
+
+    bool addGrids(Grid start, Grid size) {
+        if (start.first >= 0 && start.second >= 0 && size.first >= 0 && size.second >= 0 &&
+                start.first < gridNumber && start.second < gridNumber && size.first < gridNumber && size.second < gridNumber) {
+            for (int i = start.first; i < size.first; ++i) {
+                for (int j = start.second; j < size.second; ++j) {
+                    if (!checkCollision(Grid(i, j))) {
+                        insert(Grid(i, j));
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
+    }
+};
+
+class PartType {
+public:
     string name;
     Dimension size;
     Grid grid;
-} PartType;
+};
 
-typedef struct Part {
+class Part {
+public:
     PartType type;
     int id;
     bool traceable = false;
     geometry_msgs::PoseStamped pose;
     geometry_msgs::Vector3 linear;
-} Part;
+};
 
 typedef vector<Part> Parts;
-typedef Eigen::Matrix<double, gridNumber, gridNumber> GridMap;
 
-typedef struct Bin {
+class Bin {
+public:
     string name;
     Dimension size;
     Grid grid;
+    GridMap map;
     geometry_msgs::Pose pose;
     Parts container;
     int priority;
-} Bin;
+};
 
 const int totalPartsTypes = 8;
 const int totalAGVs = 8;
@@ -122,10 +174,10 @@ public:
 
         AGVBaseCoordinate[0] = {0.12, 3.46,0.75};
         defaultBin.name = "Bin";
-        defaultBin.grid.x = 60;
-        defaultBin.grid.y = 60;
-        defaultBin.size.x = 0.6;
-        defaultBin.size.y = 0.6;
+        defaultBin.grid.first = 60;
+        defaultBin.grid.second = 60;
+        defaultBin.size.first = 0.6;
+        defaultBin.size.second = 0.6;
 
         AGVBoundBoxXmin[0] = 0.0;
         AGVBoundBoxYmin[0] = 2.7;
@@ -153,10 +205,10 @@ public:
         PartType singlePart;
         for (int i = 0; i < totalPartsTypes; ++i) {
             singlePart.name = defaultPartsName[i];
-            singlePart.size.x = defaultPartsSize[i][0];
-            singlePart.size.y = defaultPartsSize[i][1];
-            singlePart.grid.x = (int)ceil(defaultBin.size.x / singlePart.size.x);
-            singlePart.grid.y = (int)ceil(defaultBin.size.y / singlePart.size.y);
+            singlePart.size.first = defaultPartsSize[i][0];
+            singlePart.size.second = defaultPartsSize[i][1];
+            singlePart.grid.first = (int)ceil(defaultBin.size.first / singlePart.size.first);
+            singlePart.grid.second = (int)ceil(defaultBin.size.second / singlePart.size.second);
             defaultParts.insert(make_pair(defaultPartsName[i], singlePart));
         }
     }
