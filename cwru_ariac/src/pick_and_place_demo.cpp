@@ -19,51 +19,62 @@ int main(int argc, char** argv)
 
     ros::Duration(20).sleep();
 
-    my_pose[0] = 1.288514;
-    my_pose[1] = 1.962313;
-    my_pose[2] = -0.623798;
-    my_pose[3] = 0.134005;
-    my_pose[4] = 4.051464;
-    my_pose[5] = -1.527353;
-    my_pose[6] = -3.179198;
-    robotArm.sendJointsValue(my_pose);
+    while (ros::ok()) {
+        my_pose[0] = 1.288514;
+        my_pose[1] = 1.962313;
+        my_pose[2] = -0.623798;
+        my_pose[3] = 0.134005;
+        my_pose[4] = 4.051464;
+        my_pose[5] = -1.527353;
+        my_pose[6] = -3.179198;
+        robotArm.sendJointsValue(my_pose);
 
-    robotArm.grab();
-    ros::Duration(1.5).sleep();
+        robotArm.grab();
+        robotArm.waitForGripperAttach(0);
 
-    my_pose[0] = 0.988514;
-    my_pose[1] = 1.962313;
-    my_pose[2] = -1.023798;
-    my_pose[3] = 0.134005;
-    my_pose[4] = 4.051464;
-    my_pose[5] = -1.527353;
-    my_pose[6] = -3.179198;
-    robotArm.sendJointsValue(my_pose);
+        my_pose[0] = 0.988514;
+        my_pose[1] = 1.962313;
+        my_pose[2] = -1.023798;
+        my_pose[3] = 0.134005;
+        my_pose[4] = 4.051464;
+        my_pose[5] = -1.527353;
+        my_pose[6] = -3.179198;
+        robotArm.sendJointsValue(my_pose);
 
-    my_pose[0] = 1.029344;
-    my_pose[1] = 2.100731;
-    my_pose[2] = -0.379199;
-    my_pose[3] = 1.397113;
-    my_pose[4] = 3.943804;
-    my_pose[5] = -1.601538;
-    my_pose[6] = -1.717464;
-    robotArm.sendJointsValue(my_pose);
-    ros::Duration(1.0).sleep();
-    robotArm.release();
+        my_pose[0] = 0.598882;
+        my_pose[1] = 2.100598;
+        my_pose[2] = -0.784037;
+        my_pose[3] = 1.387977;
+        my_pose[4] = 4.017667;
+        my_pose[5] = -1.592512;
+        my_pose[6] = -2.217604;
+        robotArm.sendJointsValue(my_pose);
 
-    my_pose[0] = 0.598882;
-    my_pose[1] = 2.100598;
-    my_pose[2] = -0.784037;
-    my_pose[3] = 1.387977;
-    my_pose[4] = 4.017667;
-    my_pose[5] = -1.592512;
-    my_pose[6] = -2.217604;
-    robotArm.sendJointsValue(my_pose);
-    ros::Duration(1.0).sleep();
+        my_pose[0] = 1.029344;
+        my_pose[1] = 2.100731;
+        my_pose[2] = -0.379199;
+        my_pose[3] = 1.397113;
+        my_pose[4] = 3.943804;
+        my_pose[5] = -1.601538;
+        my_pose[6] = -1.717464;
+        robotArm.sendJointsValue(my_pose);
+        ros::Duration(1.0).sleep();
+        robotArm.release();
 
-    osrf_gear::Kit kit;
-    kit = comp.orders[0].kits[0];
-    comp.submitOrder(1, kit);
+        my_pose[0] = 0.598882;
+        my_pose[1] = 2.100598;
+        my_pose[2] = -0.784037;
+        my_pose[3] = 1.387977;
+        my_pose[4] = 4.017667;
+        my_pose[5] = -1.592512;
+        my_pose[6] = -2.217604;
+        robotArm.sendJointsValue(my_pose);
+        ros::Duration(1.0).sleep();
+
+        comp.submitOrder(comp.AGV1, comp.orders[comp.orders.begin()->first].kits[0]);
+        ros::Duration(21.0).sleep();
+    }
+
 
     return 0;
 }

@@ -11,10 +11,14 @@ class OrderManager: public AriacBase {
 public:
     OrderManager(ros::NodeHandle nodeHandle);
 
-    vector<osrf_gear::Goal> orders;
+    const int AGV1 = 1;
+    const int AGV2 = 2;
+
+    map<string, osrf_gear::Goal> orders;
 
     bool startCompetition();
     bool submitOrder(int AGV, osrf_gear::Kit kit);
+
     bool isCompetitionEnd() {
         return (competitionState == "done");
     }

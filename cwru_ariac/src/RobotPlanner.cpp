@@ -11,7 +11,9 @@ RobotPlanner::RobotPlanner(ros::NodeHandle &nodeHandle): nh_( nodeHandle ){
     joint_trajectory_publisher = nh_.advertise<trajectory_msgs::JointTrajectory>(
             "/ariac/arm/command", 10);
     gripper = nh_.serviceClient<osrf_gear::VacuumGripperControl>("/ariac/gripper/control");
+    gripperStateSubscriber = nh_.subscribe("/ariac/gripper/state", 10, &RobotPlanner::gripperStateCallback, this);
     called = false;
+    attached = false;
     while(!called) {
         ROS_INFO("Waiting for joint feedback...");
         ros::spinOnce();
@@ -31,11 +33,32 @@ void RobotPlanner::jointStateCallback(const sensor_msgs::JointState::ConstPtr &j
     current_joint_states = *jointStateMsg;
     called = true;
 }
-
+void RobotPlanner::gripperStateCallback(const osrf_gear::VacuumGripperState::ConstPtr &msg) {
+    currentGripperState = *msg;
+    attached = msg->attached;
+}
+osrf_gear::VacuumGripperState RobotPlanner::getGripperState() {
+    return currentGripperState;
+}
+bool RobotPlanner::isGripperAttached() {
+    return attached;
+}
+void RobotPlanner::waitForGripperAttach(double timeout) {
+    ros::spinOnce();
+    timeout = timeout <= 0? FLT_MAX:timeout;
+    while((!attached) && timeout > 0 && ros::ok()) {
+        ROS_INFO("Retry grasp");
+        release();
+        ros::Duration(0.2).sleep();
+        grab();
+        ros::Duration(0.8).sleep();
+        ros::spinOnce();
+        timeout -= 0.4;
+    }
+}
 bool RobotPlanner::plan(geometry_msgs::Pose pose, double &executingTime) {
 
 }
-
 bool RobotPlanner::move(geometry_msgs::Pose pose, double &executingTime) {
 
 }
@@ -58,7 +81,7 @@ void RobotPlanner::sendJointsValue(vector<double> joints) {
         msg.points[0].positions[i] = joints[i];
     }
     msg.points[0].time_from_start = ros::Duration(arrivalTime);
-    //ROS_INFO_STREAM("Sending command:\n" << msg);
+    ROS_INFO_STREAM("Sending command:\n" << msg);
     joint_trajectory_publisher.publish(msg);
     waitForFinish(arrivalTime);
 }
@@ -83,13 +106,11 @@ vector<double> RobotPlanner::getJointsState() {
 }
 
 void RobotPlanner::grab() {
+    ROS_INFO("enable gripper");
     gripper.call(attach);
 }
 
 void RobotPlanner::release() {
+    ROS_INFO("release gripper");
     gripper.call(detach);
-}
-
-bool RobotPlanner::getGripperState() {
-
 }

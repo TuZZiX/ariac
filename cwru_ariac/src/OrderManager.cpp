@@ -27,15 +27,8 @@ OrderManager::OrderManager(ros::NodeHandle nodeHandle): nh_(nodeHandle){
 }
 
 void OrderManager::orderCallback(const osrf_gear::Goal::ConstPtr &goal_msg) {
-    bool found = false;
-    for (int i = 0; i < orders.size(); ++i) {
-        if (orders[i].goal_id.data == goal_msg->goal_id.data && orders[i].kits[0].kit_type.data == goal_msg->kits[0].kit_type.data) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        orders.push_back(*goal_msg);
+    if (orders.find(goal_msg->goal_id.data) == orders.end()) {
+        orders.insert(pair<string, osrf_gear::Goal>(goal_msg->goal_id.data, *goal_msg));
         ROS_INFO_STREAM("Got order :" << *goal_msg);
     }
 }

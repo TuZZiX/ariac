@@ -22,7 +22,9 @@ public:
     vector<double> getJointsState();
     void grab();
     void release();
-    bool getGripperState();
+    osrf_gear::VacuumGripperState getGripperState();
+    bool isGripperAttached();
+    void waitForGripperAttach(double timeout);
 
     void setMaxPlanningTime(double maxPlanningTime) {this->maxPlanningTime = maxPlanningTime;}
     double getMaxPlanningTime() { return maxPlanningTime;}
@@ -42,13 +44,19 @@ private:
     ros::Publisher joint_trajectory_publisher;
     ros::Subscriber joint_state_subscriber;
     ros::ServiceClient gripper;
+    ros::Subscriber gripperStateSubscriber;
+
+
     sensor_msgs::JointState current_joint_states;
-    bool called = false;
+    osrf_gear::VacuumGripperState currentGripperState;
+    bool called;
+    bool attached;
     osrf_gear::VacuumGripperControl attach;
     osrf_gear::VacuumGripperControl detach;
     double arrivalTime;
 
     void jointStateCallback(const sensor_msgs::JointState::ConstPtr &joint_state_msg);
+    void gripperStateCallback(const osrf_gear::VacuumGripperState::ConstPtr &msg);
 };
 
 
