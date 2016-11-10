@@ -17,8 +17,12 @@ public:
     bool planOffset(Vector3d offset, double& executingTime);
     bool executeLastPlan();
     bool move(geometry_msgs::Pose pose, double& executingTime);
+    void sendJointsValue(vector<double> joints);
+    void waitForFinish(double time);
+    vector<double> getJointsState();
     void grab();
     void release();
+    bool getGripperState();
 
     void setMaxPlanningTime(double maxPlanningTime) {this->maxPlanningTime = maxPlanningTime;}
     double getMaxPlanningTime() { return maxPlanningTime;}
@@ -35,6 +39,16 @@ private:
     Eigen::Vector3d currentBasePosition;
     geometry_msgs::Pose currentGripperPose;
 
+    ros::Publisher joint_trajectory_publisher;
+    ros::Subscriber joint_state_subscriber;
+    ros::ServiceClient gripper;
+    sensor_msgs::JointState current_joint_states;
+    bool called = false;
+    osrf_gear::VacuumGripperControl attach;
+    osrf_gear::VacuumGripperControl detach;
+    double arrivalTime;
+
+    void jointStateCallback(const sensor_msgs::JointState::ConstPtr &joint_state_msg);
 };
 
 

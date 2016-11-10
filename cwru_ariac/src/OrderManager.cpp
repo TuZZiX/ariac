@@ -36,6 +36,7 @@ void OrderManager::orderCallback(const osrf_gear::Goal::ConstPtr &goal_msg) {
     }
     if (!found) {
         orders.push_back(*goal_msg);
+        ROS_INFO_STREAM("Got order :" << *goal_msg);
     }
 }
 
