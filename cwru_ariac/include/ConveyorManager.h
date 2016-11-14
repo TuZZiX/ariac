@@ -16,7 +16,6 @@ public:
     double approachTimes;
     double approachAheadTime;
 
-    double estimatePickTime(Part part);
     Part getClosestPart();
     Parts getCloseParts();
     Part getClosestPartBest();

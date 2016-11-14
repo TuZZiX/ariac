@@ -14,7 +14,7 @@ public:
     const int AGV1 = 1;
     const int AGV2 = 2;
 
-    map<string, osrf_gear::Goal> orders;
+    unordered_map<string, osrf_gear::Goal> orders;
 
     bool startCompetition();
     bool submitOrder(int AGV, osrf_gear::Kit kit);

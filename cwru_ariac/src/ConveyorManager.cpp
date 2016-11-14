@@ -32,7 +32,7 @@ Part ConveyorManager::getClosestPartBest() {
     double tempTime;
 
     for (int i = 0; i < estimator_->onConveyor.size(); ++i) {
-        if(!planner_->plan(estimator_->onConveyor[i].pose.pose, tempTime))
+        if(!planner_->planPart(estimator_->onConveyor[i], tempTime))
             continue;
         if (tempTime < bestTime) {
             bestApproachIndex = i;
@@ -40,14 +40,6 @@ Part ConveyorManager::getClosestPartBest() {
         }
     }
     return estimator_->onConveyor[bestApproachIndex];
-}
-
-double ConveyorManager::estimatePickTime(Part part) {
-    double planningTime = 0.0;
-    if (planner_->plan(part.pose.pose, planningTime)) {
-        return planningTime;
-    }
-    return numeric_limits<double>::infinity();
 }
 
 bool ConveyorManager::estimateMovingPart(Part part, double &executingTime, geometry_msgs::PoseStamped &estimatedPose) {
@@ -65,9 +57,9 @@ bool ConveyorManager::estimateMovingPart(Part part, double &executingTime, geome
     part.pose.pose.position.z += part.linear.z * dt;
 
     for (int i = 0; i < approachTimes; ++i) {
-        if (planner_->plan(estimatedPose.pose, tempExeTime))
+        if (planner_->planPart(part, tempExeTime))
             return false;
-        // calculate time cost for next plan
+        // calculate time cost for next planPose
         dplan += planner_->planningTime;
         dt = tempExeTime + dplan;
         estimatedPart.pose.pose.position.x = part.pose.pose.position.x + part.linear.x * dt;
@@ -79,7 +71,7 @@ bool ConveyorManager::estimateMovingPart(Part part, double &executingTime, geome
         estimatedPart.pose.pose.position.x += part.linear.x * approachAheadTime;
         estimatedPart.pose.pose.position.y += part.linear.y * approachAheadTime;
         estimatedPart.pose.pose.position.z += part.linear.z * approachAheadTime;
-        if (planner_->plan(estimatedPose.pose, executingTime))
+        if (planner_->planPart(part, executingTime))
             return false;
         if (executingTime - tempExeTime + planner_->planningTime < approachAheadTime)
             reachable = true;

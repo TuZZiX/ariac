@@ -56,19 +56,26 @@ void RobotPlanner::waitForGripperAttach(double timeout) {
         timeout -= 0.4;
     }
 }
-bool RobotPlanner::plan(geometry_msgs::Pose pose, double &executingTime) {
-
+bool RobotPlanner::planPose(geometry_msgs::Pose pose, double &executingTime) {
+    executingTime = rand()%6;
+    return true;
+}
+bool RobotPlanner::planPart(Part part, double &executingTime) {
+    executingTime = rand()%6;
+    return true;
 }
 bool RobotPlanner::move(geometry_msgs::Pose pose, double &executingTime) {
-
+    executingTime = rand()%6;
+    return true;
 }
 
 bool RobotPlanner::planToHome(double &executingTime) {
-
+    executingTime = rand()%6;
+    return true;
 }
 
 bool RobotPlanner::executeLastPlan() {
-
+    return true;
 }
 
 void RobotPlanner::sendJointsValue(vector<double> joints) {

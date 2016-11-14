@@ -13,10 +13,13 @@ public:
 
     RobotPlanner(ros::NodeHandle& nodeHandle);
     bool planToHome(double& executingTime);
-    bool plan(geometry_msgs::Pose pose, double& executingTime);
+    bool planPose(geometry_msgs::Pose pose, double &executingTime);
+    bool planPart(Part part, double& executingTime);
     bool planOffset(Vector3d offset, double& executingTime);
     bool executeLastPlan();
+
     bool move(geometry_msgs::Pose pose, double& executingTime);
+
     void sendJointsValue(vector<double> joints);
     void waitForFinish(double time);
     vector<double> getJointsState();

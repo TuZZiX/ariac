@@ -29,7 +29,6 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 #cs_add_library(FakeHeaderLib include/AriacBase.h include/CameraEstimator.h include/RobotPlanner.h include/BinManager.h include/ConveyorManager.h include/GlobalManager.h include/OrderManager.h)
 cs_add_library(AriacLib src/RobotPlanner.cpp src/CameraEstimator.cpp src/BinManager.cpp src/ConveyorManager.cpp src/GlobalManager.cpp src/OrderManager.cpp src/Cheater.cpp)
 
-
 # Executables: uncomment the following and edit arguments to compile new nodes
 # may add more of these lines for more nodes from the same package
 # cs_add_executable(example src/example.cpp)
