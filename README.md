@@ -1,15 +1,19 @@
-# Gazebo Environment for Agile Robotics (GEAR)
+# CWRU Agile Robotics for Industrial Automation Competition (ARIAC) 
 
-GEAR is the software used by teams participating in the Agile Robotics for
-Industrial Automation Competition (ARIAC) hosted by the National Institute
-of Standards and Technology (NIST).
+ARIAC is a competition hosted by the National Institute of Standards and Technology (NIST).
 
-## Install
+## cwru_ariac
 
-Refer the [system setup tutorial](https://bitbucket.org/osrf/ariac/wiki/system_setup).
+Code for doing this competition, under development.
 
-## Resources
+## osrf_gear
 
-1. [Tutorials](https://bitbucket.org/osrf/gear/wiki/tutorials)
-1. [Documentation](https://bitbucket.org/osrf/ariac/wiki/documentation)
-1. [ARIAC website](http://robotagility.wix.com/competition)
+Official ARIAC repository
+
+Modified from [OSRF GEAR](https://bitbucket.org/osrf/ariac/overview).
+
+System setup see [here](https://github.com/cwru-robotics/cwru_scripts/blob/master/ariac/ariac.sh).
+
+## gear_example
+
+Official exmaple from OSRF

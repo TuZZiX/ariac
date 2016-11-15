@@ -10,6 +10,7 @@ CameraEstimator::CameraEstimator(ros::NodeHandle nodeHandle, string cameraTopic)
     distanceTolerance = 0.01;
     untraceableTolerance = 0.1;
     assigndID = 1;
+    called = false;
 
     worldFrame = "/world";
     cameraFrame = "/logical_camera_1_frame";
@@ -94,9 +95,9 @@ void CameraEstimator::cameraCallback(const osrf_gear::LogicalCameraImage::ConstP
         }
         updateView.push_back(nextPart);
     }
-
     inView.swap(updateView);
     splitLocation();
+    called = true;
 }
 void CameraEstimator::splitLocation() {
     onConveyor.clear();

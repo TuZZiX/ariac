@@ -18,8 +18,8 @@ public:
     Parts onBin[totalBins];
     string worldFrame;
     string cameraFrame;
-
     CameraEstimator(ros::NodeHandle nodeHandle, string cameraTopic = "/ariac/logical_camera_1");
+    void waitForUpdate();
 
 private:
     ros::NodeHandle nh_;
@@ -30,6 +30,7 @@ private:
     tf::StampedTransform transform;
     ros::Time lastTime;
     int assigndID;
+    bool called;
 };
 
 

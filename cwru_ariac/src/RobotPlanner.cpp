@@ -5,7 +5,7 @@
 #include "RobotPlanner.h"
 
 RobotPlanner::RobotPlanner(ros::NodeHandle &nodeHandle): nh_( nodeHandle ){
-    ros::Subscriber joint_state_subscriber = nh_.subscribe(
+    joint_state_subscriber = nh_.subscribe(
             "/ariac/joint_states", 10,
             &RobotPlanner::jointStateCallback, this);
     joint_trajectory_publisher = nh_.advertise<trajectory_msgs::JointTrajectory>(

@@ -10,4 +10,7 @@ int main(int argc, char** argv) {
     CameraEstimator camera(nh);
     RobotPlanner robot(nh);
     ConveyorManager conveyor(nh, camera, robot);
+    while (ros::ok()) {
+
+    }
 }
