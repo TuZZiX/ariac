@@ -3,31 +3,31 @@
 Overall structure see here:
 ```
             ←←←←←CameraEstimator
-          ↓                           ↓
-          ↓              ConveyorManager
-          ↓                           ↓
-BinManager → GlobalManager ← Parts on AGV and gound
-          ↑                           ↓
-  PartsSorter     GlobalPlanner ← RobotPlanner
-                                        ↑
-                           OrderManager
+          ↓            ↓
+          ↓      ConveyorManager
+          ↓            ↓
+     BinManager → GlobalManager ← Parts on AGV and gound
+          ↑            ↓
+    PartsSorter   GlobalPlanner ← RobotPlanner
+                       ↑
+                  OrderManager
 ```
 
 ## Modules
 
-AriacBase: base of every classes (Done)
+**AriacBase**: base of every classes (Done)
 
-CameraEstimator: watching camera updates keep tracking parts (Done, Not tested)
+**CameraEstimator**: watching camera updates keep tracking parts (Done, Not tested)
 
-ConveyorManager: provide planning interface for parts on Conveyor (Done, Not tested)
+**ConveyorManager**: provide planning interface for parts on Conveyor (Done, Not tested)
 
-BinManager: maintain each bin cells provide temporary location for parts
+**BinManager**: maintain each bin cells provide temporary location for parts
 
-OrderManager: start competition, check score, and submit orders (call AGV)
+**OrderManager**: start competition, check score, and submit orders (call AGV) (Done, Not tested)
 
-RobotPlanner: planning interface for UR10 + extra linear tray (7DOF)
+**RobotPlanner**: planning interface for UR10 + extra linear tray (7DOF)
 
-Cheater: extra interface for competition control, won't available in real competition
+**Cheater**: extra interface for competition control, won't available in real competition (Done, Not tested)
 
 ## Running tests/demos
 
