@@ -15,8 +15,6 @@ public:
     bool updateBin(Parts parts, int binNum);
     bool getBestLocation(PartType part, geometry_msgs::Pose &bestLocation);
     bool getListLocation(PartType part, vector<geometry_msgs::Pose> &bestLocation);
-
-    vector<Bin> bins;
 private:
 
 };

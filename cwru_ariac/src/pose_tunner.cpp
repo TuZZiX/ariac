@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     int joint;
     double angle;
     vector<double> my_pose;
-    while(!called) {
+    while(!called && ros::ok()) {
         ROS_INFO("Waiting for joint feedback...");
         ros::spinOnce();
         ros::Duration(0.2).sleep();

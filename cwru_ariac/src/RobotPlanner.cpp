@@ -14,10 +14,10 @@ RobotPlanner::RobotPlanner(ros::NodeHandle &nodeHandle): nh_( nodeHandle ){
     gripperStateSubscriber = nh_.subscribe("/ariac/gripper/state", 10, &RobotPlanner::gripperStateCallback, this);
     called = false;
     attached = false;
-    while(!called) {
-        ROS_INFO("Waiting for joint feedback...");
+    while(!called && ros::ok()) {
+        //ROS_INFO("Waiting for joint feedback...");
         ros::spinOnce();
-        ros::Duration(0.2).sleep();
+        ros::Duration(0.05).sleep();
     }
     if (!gripper.exists()) {
         gripper.waitForExistence();
@@ -47,7 +47,7 @@ void RobotPlanner::waitForGripperAttach(double timeout) {
     ros::spinOnce();
     timeout = timeout <= 0? FLT_MAX:timeout;
     while((!attached) && timeout > 0 && ros::ok()) {
-        ROS_INFO("Retry grasp");
+        //ROS_INFO("Retry grasp");
         release();
         ros::Duration(0.2).sleep();
         grab();
@@ -98,12 +98,12 @@ void RobotPlanner::waitForFinish(double time) {
     ros::spinOnce();
 }
 vector<double> RobotPlanner::getJointsState() {
-//    called = false;
-//    while(!called) {
-//        //ROS_INFO("Waiting for joint feedback...");
-//        ros::spinOnce();
-//        ros::Duration(0.1).sleep();
-//    }
+    called = false;
+    while(!called && ros::ok()) {
+        //ROS_INFO("Waiting for joint feedback...");
+        ros::spinOnce();
+        ros::Duration(0.1).sleep();
+    }
     vector<double> joints;
     joints.resize(current_joint_states.name.size(), 0.0);
     for (int i = 0; i < joints.size(); ++i) {
@@ -113,11 +113,11 @@ vector<double> RobotPlanner::getJointsState() {
 }
 
 void RobotPlanner::grab() {
-    ROS_INFO("enable gripper");
+    //ROS_INFO("enable gripper");
     gripper.call(attach);
 }
 
 void RobotPlanner::release() {
-    ROS_INFO("release gripper");
+    //ROS_INFO("release gripper");
     gripper.call(detach);
 }

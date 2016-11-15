@@ -15,7 +15,7 @@ Cheater::Cheater(ros::NodeHandle nodeHandle) : nh_(nodeHandle) {
     populationControl = nh_.serviceClient<osrf_gear::PopulationControl>("/ariac/population/control");
     conveyorCalled = false;
     populationCalled = false;
-    while(!conveyorCalled || !populationCalled) {
+    while(!conveyorCalled || !populationCalled && ros::ok()) {
         ros::spinOnce();
         ros::Duration(0.1).sleep();
     }

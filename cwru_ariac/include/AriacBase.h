@@ -1,6 +1,8 @@
 //
 // Created by shipei on 10/18/16.
 //
+// So many hard coded stuffs QAQ
+
 
 #ifndef CWRU_ARIAC_ARIACBASE_H
 #define CWRU_ARIAC_ARIACBASE_H
@@ -149,10 +151,9 @@ const double defaultPartsSize[totalPartsTypes][2] = {{0.059,0.052}, {0.078425,0.
 class AriacBase {
 public:
     unordered_map<string, PartType> defaultParts;
+    vector<Bin> bins;
 
-    Bin defaultBin;
-
-    Eigen::Vector3d AGVBaseCoordinate[totalAGVs];
+    Vector3d AGVBaseCoordinate[totalAGVs];
 
     double AGVBoundBoxXmin[totalAGVs];
     double AGVBoundBoxYmin[totalAGVs];
@@ -171,13 +172,20 @@ public:
 
 
     AriacBase() {
-
+        Bin defaultBin;
         AGVBaseCoordinate[0] = {0.12, 3.46,0.75};
         defaultBin.name = "Bin";
         defaultBin.grid.first = 60;
         defaultBin.grid.second = 60;
         defaultBin.size.first = 0.6;
         defaultBin.size.second = 0.6;
+
+        bins = vector<Bin>(totalBins, defaultBin);
+        bins[3].name = "bin4";
+        bins[3].priority = 5;
+        bins[3].pose.position.x = -1.000000;
+        bins[3].pose.position.y = 0.995000;
+        bins[3].pose.position.z = 0.0;
 
         AGVBoundBoxXmin[0] = 0.0;
         AGVBoundBoxYmin[0] = 2.7;
@@ -213,49 +221,10 @@ public:
         }
     }
 
-    inline double euclidianDistance(geometry_msgs::Point positionA, geometry_msgs::Point positionB) {
+    inline double euclideanDistance(geometry_msgs::Point positionA, geometry_msgs::Point positionB) {
         return sqrt(pow(positionA.x - positionB.x, 2) + pow(positionA.y - positionB.y, 2) + pow(positionA.z - positionB.z, 2));
     }
-
-    vector<double> quat2euler(geometry_msgs::Quaternion quaternion) {
-        double mData[4];
-        std::vector<double> euler(3);
-        const static double PI_OVER_2 = M_PI * 0.5;
-        const static double EPSILON = 1e-10;
-        double sqw, sqx, sqy, sqz;
-
-        mData[0] = quaternion.x;
-        mData[1] = quaternion.y;
-        mData[2] = quaternion.z;
-        mData[3] = quaternion.w;
-        // quick conversion to Euler angles to give tilt to user
-        sqw = mData[3] * mData[3];
-        sqx = mData[0] * mData[0];
-        sqy = mData[1] * mData[1];
-        sqz = mData[2] * mData[2];
-
-        euler[1] = asin(2.0 * (mData[3] * mData[1] - mData[0] * mData[2]));
-        if (PI_OVER_2 - fabs(euler[1]) > EPSILON) {
-            euler[2] = atan2(2.0 * (mData[0] * mData[1] + mData[3] * mData[2]),
-                             sqx - sqy - sqz + sqw);
-            euler[0] = atan2(2.0 * (mData[3] * mData[0] + mData[1] * mData[2]),
-                             sqw - sqx - sqy + sqz);
-        } else {
-            // compute heading from local 'down' vector
-            euler[2] = atan2(2 * mData[1] * mData[2] - 2 * mData[0] * mData[3],
-                             2 * mData[0] * mData[2] + 2 * mData[1] * mData[3]);
-            euler[0] = 0.0;
-
-            // If facing down, reverse yaw
-            if (euler[1] < 0)
-                euler[2] = M_PI - euler[2];
-        }
-        return euler;
-    }
-
 };
 
-
-
-
 #endif //CWRU_ARIAC_ARIACBASE_H
+// （╯' - ')╯︵ ┻━┻           ┬─┬ ノ( ' - 'ノ)            (╯°Д°)╯︵ ┻━┻

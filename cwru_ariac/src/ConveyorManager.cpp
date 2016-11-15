@@ -16,7 +16,7 @@ Part ConveyorManager::getClosestPart() {
     double tempDistance;
 
     for (int i = 0; i < estimator_->onConveyor.size(); ++i) {
-        tempDistance = euclidianDistance(planner_->getCurrentGripperPose().position, estimator_->onConveyor[i].pose.pose.position);
+        tempDistance = euclideanDistance(planner_->getCurrentGripperPose().position, estimator_->onConveyor[i].pose.pose.position);
         if (tempDistance < bestDistance) {
             bestApproachIndex = i;
             bestDistance = tempDistance;

@@ -20,7 +20,7 @@ This is configurable in *config/ariac_conf.yaml*, including sensors and initial 
 
 **AriacBase**: base of every classes (Done)
 
-**CameraEstimator**: watching camera updates keep tracking parts (Done, Not tested)
+**CameraEstimator**: watching camera updates keep tracking parts (Done, Tested)
 
 **ConveyorManager**: provide planning interface for parts on Conveyor (Done, Not tested)
 

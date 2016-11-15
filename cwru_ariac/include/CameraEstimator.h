@@ -30,7 +30,8 @@ private:
     tf::StampedTransform transform;
     ros::Time lastTime;
     int assigndID;
-    bool called;
+    int updateCount;
+    int checkedCount;
 };
 
 
