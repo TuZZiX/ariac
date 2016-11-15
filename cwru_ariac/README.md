@@ -12,6 +12,9 @@ Overall structure see here:
                        ↑
                   OrderManager
 ```
+Since the logical camera is a cheat camera, only a single camera can done the job of the whole competition.
+
+This is configurable in *config/ariac_conf.yaml*, including sensors and initial joint state.
 
 ## Modules
 

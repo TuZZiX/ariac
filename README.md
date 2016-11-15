@@ -1,6 +1,6 @@
-# CWRU Agile Robotics for Industrial Automation Competition (ARIAC) 
+# CWRU ARIAC
 
-ARIAC is a competition hosted by the National Institute of Standards and Technology (NIST).
+ARIAC (Agile Robotics for Industrial Automation Competition) is a competition hosted by the National Institute of Standards and Technology (NIST).
 
 ## cwru_ariac
 
