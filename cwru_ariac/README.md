@@ -1,8 +1,66 @@
 # cwru_ariac
 
-Your description goes here
+Overall structure see here:
+```
+            ←←←←←CameraEstimator
+          ↓                           ↓
+          ↓              ConveyorManager
+          ↓                           ↓
+BinManager → GlobalManager ← Parts on AGV and gound
+          ↑                           ↓
+  PartsSorter     GlobalPlanner ← RobotPlanner
+                                        ↑
+                           OrderManager
+```
 
-## Example usage
+## Modules
+
+AriacBase: base of every classes (Done)
+
+CameraEstimator: watching camera updates keep tracking parts (Done, Not tested)
+
+ConveyorManager: provide planning interface for parts on Conveyor (Done, Not tested)
+
+BinManager: maintain each bin cells provide temporary location for parts
+
+OrderManager: start competition, check score, and submit orders (call AGV)
+
+RobotPlanner: planning interface for UR10 + extra linear tray (7DOF)
+
+Cheater: extra interface for competition control, won't available in real competition
 
 ## Running tests/demos
+
+###Before run: 
+
+Run setup script from [cwru_scripts](https://github.com/cwru-robotics/cwru_scripts/blob/master/ariac/ariac.sh)
+
+Clone this repository and do `catkin_make` and `catkin_make install`
+
+Start simulator by one of following commands:
+
+With all parts on Bins:
+``
+rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf1.yaml `rospack find cwru_ariac`/config/ariac_conf.yaml
+``
+
+With some of parts on Bins:
+``
+rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf2.yaml `rospack find cwru_ariac`/config/ariac_conf.yaml
+``
+
+With no parts on Bins:
+``
+rosrun osrf_gear gear.py -f `rospack find cwru_ariac`/config/ariac_conf.yaml
+``
+
+Optional args:
+
+`-o /tmp` -- this generates temporary launch files in /tmp directory
+
+###Executables:
+
+`rosrun cwru_ariac pose_tunner`: a tool for change joints values arbitrary, with joint value feedback. 
+
+`rosrun cwru_ariac pick_and_place_demo`: a dumb demo for pick and place part, will failed occasionally.
     
