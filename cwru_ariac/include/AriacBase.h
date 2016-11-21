@@ -111,6 +111,15 @@ public:
     }
 };
 
+class BoundBox {
+public:
+    double Xmin;
+    double Xmax;
+    double Ymin;
+    double Ymax;
+    double Zmin;
+    double Zmax;
+};
 class PartType {
 public:
     string name;
@@ -137,11 +146,12 @@ public:
     GridMap map;
     geometry_msgs::Pose pose;
     Parts container;
+    BoundBox bound;
     int priority;
 };
 
 const int totalPartsTypes = 8;
-const int totalAGVs = 8;
+const int totalAGVs = 2;
 const int totalBins = 8;
 const double averageCost = 1000;
 const string defaultPartsName[totalPartsTypes] = {"piston_rod_part", "gear_part", "pulley_part", "gasket_part", "part1", "part2", "part3", "part4"};
@@ -227,4 +237,3 @@ public:
 };
 
 #endif //CWRU_ARIAC_ARIACBASE_H
-// （╯' - ')╯︵ ┻━┻           ┬─┬ ノ( ' - 'ノ)            (╯°Д°)╯︵ ┻━┻

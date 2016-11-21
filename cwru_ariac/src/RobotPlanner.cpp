@@ -24,8 +24,9 @@ RobotPlanner::RobotPlanner(ros::NodeHandle &nodeHandle): nh_( nodeHandle ){
     }
     attach.request.enable = 1;
     detach.request.enable = 0;
-    planningTime = 0.5;
     arrivalTime = 0.5;
+    approachTimes = 5;
+    approachAheadTime = 0.5;
 }
 
 void RobotPlanner::jointStateCallback(const sensor_msgs::JointState::ConstPtr &jointStateMsg)
@@ -33,17 +34,21 @@ void RobotPlanner::jointStateCallback(const sensor_msgs::JointState::ConstPtr &j
     current_joint_states = *jointStateMsg;
     called = true;
 }
+
 void RobotPlanner::gripperStateCallback(const osrf_gear::VacuumGripperState::ConstPtr &msg) {
     currentGripperState = *msg;
     attached = msg->attached;
 }
+
 osrf_gear::VacuumGripperState RobotPlanner::getGripperState() {
     return currentGripperState;
 }
+
 bool RobotPlanner::isGripperAttached() {
     return attached;
 }
-void RobotPlanner::waitForGripperAttach(double timeout) {
+
+bool RobotPlanner::waitForGripperAttach(double timeout) {
     ros::spinOnce();
     timeout = timeout <= 0? FLT_MAX:timeout;
     while((!attached) && timeout > 0 && ros::ok()) {
@@ -55,22 +60,27 @@ void RobotPlanner::waitForGripperAttach(double timeout) {
         ros::spinOnce();
         timeout -= 0.4;
     }
+    return attached;
 }
-bool RobotPlanner::planPose(geometry_msgs::Pose pose, double &executingTime) {
-    executingTime = rand()%6;
-    return true;
-}
-bool RobotPlanner::planPart(Part part, double &executingTime) {
-    executingTime = rand()%6;
-    return true;
-}
-bool RobotPlanner::move(geometry_msgs::Pose pose, double &executingTime) {
-    executingTime = rand()%6;
+
+bool RobotPlanner::planPose(geometry_msgs::PoseStamped pose) {
+    // TODO
+    lastPlanningTime = rand()/RAND_MAX;
+    lastExecutingTime = (rand()/RAND_MAX)*6;
     return true;
 }
 
-bool RobotPlanner::planToHome(double &executingTime) {
-    executingTime = rand()%6;
+bool RobotPlanner::planPart(Part part) {
+    // TODO
+    lastPlanningTime = rand()/RAND_MAX;
+    lastExecutingTime = (rand()/RAND_MAX)*6;
+    return true;
+}
+
+bool RobotPlanner::planToHome() {
+    // TODO
+    lastPlanningTime = rand()/RAND_MAX;
+    lastExecutingTime = (rand()/RAND_MAX)*6;
     return true;
 }
 
@@ -90,13 +100,10 @@ void RobotPlanner::sendJointsValue(vector<double> joints) {
     msg.points[0].time_from_start = ros::Duration(arrivalTime);
     ROS_INFO_STREAM("Sending command:\n" << msg);
     joint_trajectory_publisher.publish(msg);
-    waitForFinish(arrivalTime);
-}
-
-void RobotPlanner::waitForFinish(double time) {
-    ros::Duration(time).sleep();                         // wait for finish
+    ros::Duration(arrivalTime).sleep();                         // wait for finish
     ros::spinOnce();
 }
+
 vector<double> RobotPlanner::getJointsState() {
     called = false;
     while(!called && ros::ok()) {
@@ -120,4 +127,42 @@ void RobotPlanner::grab() {
 void RobotPlanner::release() {
     //ROS_INFO("release gripper");
     gripper.call(detach);
+}
+
+bool RobotPlanner::estimateMovingPart(Part part, geometry_msgs::PoseStamped &estimatedPose) {
+    Part estimatedPart = part;
+    double dplan = 0;
+    double dt = 0;
+    double tempExeTime = 0;
+    estimatedPose = part.pose;
+    estimatedPose.header.stamp = ros::Time::now();
+
+    // planning time for the first time
+    part.pose.pose.position.x += part.linear.x * dt;
+    part.pose.pose.position.y += part.linear.y * dt;
+    part.pose.pose.position.z += part.linear.z * dt;
+
+    for (int i = 0; i < approachTimes; ++i) {
+        if (planPart(part))
+            return false;
+        // calculate time cost for next planPose
+        dplan += getLastPlanningTime();
+        dt = getLastExecutingTime() + dplan;
+        estimatedPart.pose.pose.position.x = part.pose.pose.position.x + part.linear.x * dt;
+        estimatedPart.pose.pose.position.y = part.pose.pose.position.y + part.linear.y * dt;
+        estimatedPart.pose.pose.position.z = part.pose.pose.position.z + part.linear.z * dt;
+    }
+    bool reachable = false;
+    while (!reachable) {
+        estimatedPart.pose.pose.position.x += part.linear.x * approachAheadTime;
+        estimatedPart.pose.pose.position.y += part.linear.y * approachAheadTime;
+        estimatedPart.pose.pose.position.z += part.linear.z * approachAheadTime;
+        if (planPart(part))
+            return false;
+        if (getLastExecutingTime() - tempExeTime + getLastPlanningTime() < approachAheadTime)
+            reachable = true;
+        // reach that pose at estimated time
+        estimatedPose.header.stamp = ros::Time::now() + ros::Duration(approachAheadTime);
+    }
+    return true;
 }
