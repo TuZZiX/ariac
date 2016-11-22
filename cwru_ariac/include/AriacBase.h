@@ -11,6 +11,8 @@
 #include <ros/ros.h>
 #include <iostream>
 #include <math.h>
+#include <cmath>
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -23,22 +25,10 @@
 
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/LaserScan.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Float32.h>
-#include <std_msgs/Float64.h>
-#include <std_msgs/String.h>
-#include <std_srvs/Trigger.h>
 #include <trajectory_msgs/JointTrajectory.h>
-#include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <geometry_msgs/PoseStamped.h>
-
-#include <moveit/move_group_interface/move_group.h>
-#include <moveit/planning_scene_interface/planning_scene_interface.h>
-#include <moveit_msgs/AttachedCollisionObject.h>
-#include <moveit_msgs/CollisionObject.h>
-#include <actionlib/client/simple_action_client.h>
-#include <actionlib/server/simple_action_server.h>
-#include <actionlib/client/terminal_state.h>
+#include <std_msgs/Float32.h>
+#include <std_srvs/Trigger.h>
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 
@@ -49,106 +39,44 @@
 #include <osrf_gear/VacuumGripperControl.h>
 #include <osrf_gear/VacuumGripperState.h>
 
+#include <cwru_ariac/AGV.h>
+#include <cwru_ariac/Bin.h>
+#include <cwru_ariac/BoundBox.h>
+#include <cwru_ariac/Dimension.h>
+#include <cwru_ariac/Grid.h>
+#include <cwru_ariac/Part.h>
+#include <cwru_ariac/Parts.h>
+#include <cwru_ariac/PartType.h>
+
 using namespace std;
 using namespace Eigen;
+using namespace cwru_ariac;
 
 const int gridNumber = 60;
 
-// TODO change types to ROS message types
-
-typedef pair<int, int> Grid;
-typedef pair<double, double> Dimension;
-//typedef map<Grid, bool> GridMap;
-enum Direction {
-    top, bottom, left, right,
-    topLeft, topRight, bottomLeft, bottomRight
-};
-
-class GridMap: public unordered_set<Grid, boost::hash<pair<int, int>>> {
-public:
-    bool checkCollision(Grid grid) {
-        return find(grid)==end();
-    }
-
-    bool addGrids(Grid start, Grid size, Direction direction) {
-        Grid A;
-        switch (direction) {
-            case topLeft:
-                A.first = start.first - size.first;
-                A.second = start.second;
-                break;
-            case topRight:
-                A = start;
-                break;
-            case bottomLeft:
-                A.first = start.first - size.first;
-                A.second = start.second - size.second;
-                break;
-            case bottomRight:
-                A.first = start.first;
-                A.second = start.second - size.second;
-                break;
+// overlaod hash function for Part to use unordered set
+namespace std {
+    template <> struct hash<Part>
+    {
+        typedef Part      argument_type;
+        typedef std::size_t  result_type;
+        result_type operator()(const Part & t) const {
+            std::size_t val { 0 };
+            boost::hash_combine(val,hash<int>{}(t.id));
+            boost::hash_combine(val,hash<string>{}(t.name));
+            return val;
         }
-        return addGrids(A, size);
-    }
+    };
+}
+// hash set requires operator == to insert and erase
+namespace cwru_ariac {
+    template<typename ContainerAllocator> bool operator ==(
+            const ::cwru_ariac::Part_<ContainerAllocator> & a, const ::cwru_ariac::Part_<ContainerAllocator> & b) {
+        return (a.id == b.id) && (a.name == b.name);}
+}
 
-    bool addGrids(Grid start, Grid size) {
-        if (start.first >= 0 && start.second >= 0 && size.first >= 0 && size.second >= 0 &&
-                start.first < gridNumber && start.second < gridNumber && size.first < gridNumber && size.second < gridNumber) {
-            for (int i = start.first; i < size.first; ++i) {
-                for (int j = start.second; j < size.second; ++j) {
-                    if (!checkCollision(Grid(i, j))) {
-                        insert(Grid(i, j));
-                    } else {
-                        return false;
-                    }
-                }
-            }
-        } else {
-            return false;
-        }
-        return true;
-    }
-};
-
-class BoundBox {
-public:
-    double Xmin;
-    double Xmax;
-    double Ymin;
-    double Ymax;
-    double Zmin;
-    double Zmax;
-};
-class PartType {
-public:
-    string name;
-    Dimension size;
-    Grid grid;
-};
-
-class Part {
-public:
-    PartType type;
-    int id;
-    bool traceable = false;
-    geometry_msgs::PoseStamped pose;
-    geometry_msgs::Vector3 linear;
-};
-
-typedef vector<Part> Parts;
-
-class Bin {
-public:
-    string name;
-    Dimension size;
-    Grid grid;
-    GridMap map;
-    geometry_msgs::Pose pose;
-    Parts container;
-    BoundBox bound;
-    int priority;
-};
+typedef unordered_set<Part> PartSet;  // int is id of the part, Part is part object, using map for fast search
+typedef vector<Part> PartList;
 
 const int totalPartsTypes = 8;
 const int totalAGVs = 2;
@@ -159,11 +87,11 @@ const double defaultPartsSize[totalPartsTypes][2] = {{0.059,0.052}, {0.078425,0.
 
 // this class is used to storage some basic information of the competition and common algorithms.
 class AriacBase {
-public:
+protected:
     unordered_map<string, PartType> defaultParts;
-    vector<Bin> bins;
-
-    Vector3d AGVBaseCoordinate[totalAGVs];
+    Bin defaultBin;
+    vector<AGV> agvs;
+    vector<vector<double>> AGVBaseCoordinate;
 
     double AGVBoundBoxXmin[totalAGVs];
     double AGVBoundBoxYmin[totalAGVs];
@@ -182,20 +110,14 @@ public:
 
 
     AriacBase() {
-        Bin defaultBin;
-        AGVBaseCoordinate[0] = {0.12, 3.46,0.75};
         defaultBin.name = "Bin";
-        defaultBin.grid.first = 60;
-        defaultBin.grid.second = 60;
-        defaultBin.size.first = 0.6;
-        defaultBin.size.second = 0.6;
+        defaultBin.grid.x = 60;
+        defaultBin.grid.y = 60;
+        defaultBin.size.x = 0.6;
+        defaultBin.size.y = 0.6;
 
-        bins = vector<Bin>(totalBins, defaultBin);
-        bins[3].name = "bin4";
-        bins[3].priority = 5;
-        bins[3].pose.position.x = -1.000000;
-        bins[3].pose.position.y = 0.995000;
-        bins[3].pose.position.z = 0.0;
+        AGVBaseCoordinate.resize(3);
+        AGVBaseCoordinate[0] = {0.12, 3.46,0.75};
 
         AGVBoundBoxXmin[0] = 0.0;
         AGVBoundBoxYmin[0] = 2.7;
@@ -223,12 +145,27 @@ public:
         PartType singlePart;
         for (int i = 0; i < totalPartsTypes; ++i) {
             singlePart.name = defaultPartsName[i];
-            singlePart.size.first = defaultPartsSize[i][0];
-            singlePart.size.second = defaultPartsSize[i][1];
-            singlePart.grid.first = (int)ceil(defaultBin.size.first / singlePart.size.first);
-            singlePart.grid.second = (int)ceil(defaultBin.size.second / singlePart.size.second);
+            singlePart.size.x = defaultPartsSize[i][0];
+            singlePart.size.y = defaultPartsSize[i][1];
+            singlePart.grid.x = (int)ceil(defaultBin.size.x / singlePart.size.x);
+            singlePart.grid.y = (int)ceil(defaultBin.size.y / singlePart.size.y);
             defaultParts.insert(make_pair(defaultPartsName[i], singlePart));
         }
+    }
+public:
+    // simple template find part by id
+    template<typename T> inline typename T::iterator findPart(T& parts, int id) {
+        return find_if(parts.begin(), parts.end(), [id](Part p){return p.id == id;});
+    }
+    // simple template find parts by type
+    template<typename T> inline PartList findPart(T& parts, string type) {
+        PartList result;
+        for (auto p: parts) {
+            if(p.name == type){
+                result.push_back(p);
+            }
+        }
+        return result;
     }
 
     inline double euclideanDistance(geometry_msgs::Point positionA, geometry_msgs::Point positionB) {
@@ -237,3 +174,62 @@ public:
 };
 
 #endif //CWRU_ARIAC_ARIACBASE_H
+
+//#include <moveit/move_group_interface/move_group.h>
+//#include <moveit/planning_scene_interface/planning_scene_interface.h>
+//#include <moveit_msgs/AttachedCollisionObject.h>
+//#include <moveit_msgs/CollisionObject.h>
+//#include <actionlib/client/simple_action_client.h>
+//#include <actionlib/server/simple_action_server.h>
+//#include <actionlib/client/terminal_state.h>
+// 一些垃圾代码就藏在这里了
+//enum Direction {
+//    top, bottom, left, right,
+//    topLeft, topRight, bottomLeft, bottomRight
+//};
+//class GridMap: public unordered_set<Grid, boost::hash<pair<int, int>>> {
+//public:
+//    bool checkCollision(Grid grid) {
+//        return find(grid)==end();
+//    }
+//
+//    bool addGrids(Grid start, Grid size, Direction direction) {
+//        Grid A;
+//        switch (direction) {
+//            case topLeft:
+//                A.first = start.first - size.first;
+//                A.second = start.second;
+//                break;
+//            case topRight:
+//                A = start;
+//                break;
+//            case bottomLeft:
+//                A.first = start.first - size.first;
+//                A.second = start.second - size.second;
+//                break;
+//            case bottomRight:
+//                A.first = start.first;
+//                A.second = start.second - size.second;
+//                break;
+//        }
+//        return addGrids(A, size);
+//    }
+//
+//    bool addGrids(Grid start, Grid size) {
+//        if (start.first >= 0 && start.second >= 0 && size.first >= 0 && size.second >= 0 &&
+//                start.first < gridNumber && start.second < gridNumber && size.first < gridNumber && size.second < gridNumber) {
+//            for (int i = start.first; i < size.first; ++i) {
+//                for (int j = start.second; j < size.second; ++j) {
+//                    if (!checkCollision(Grid(i, j))) {
+//                        insert(Grid(i, j));
+//                    } else {
+//                        return false;
+//                    }
+//                }
+//            }
+//        } else {
+//            return false;
+//        }
+//        return true;
+//    }
+//};

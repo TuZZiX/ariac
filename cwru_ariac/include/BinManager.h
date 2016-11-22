@@ -12,11 +12,19 @@
 class BinManage: public AriacBase {
 public:
     BinManage(ros::NodeHandle nodeHandle);
-    bool updateBin(Parts parts, int binNum);
-    bool getBestLocation(PartType part, geometry_msgs::Pose &bestLocation);
-    bool getListLocation(PartType part, vector<geometry_msgs::Pose> &bestLocation);
-private:
+    bool initBin(vector<Parts>& onBin);
+    bool findPutLocation(PartType part, geometry_msgs::PoseStamped& best);
+    bool findPutLocationList(PartType part, vector<geometry_msgs::PoseStamped>& list);
+    bool findRemoveLocation(PartType part, geometry_msgs::PoseStamped& best);
+    bool findRemoveLocationList(PartType part, vector<geometry_msgs::PoseStamped>& list);
+    bool put(Part part);
+    bool remove(Part part);
 
+    vector<Bin> bins;
+private:
+    ros::NodeHandle nh_;
+
+    vector<int> priorityList;
 };
 
 

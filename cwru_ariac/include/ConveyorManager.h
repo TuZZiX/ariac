@@ -12,12 +12,11 @@
 class ConveyorManager: public AriacBase {
 public:
     ConveyorManager(ros::NodeHandle nodeHandle, CameraEstimator &estimator, RobotPlanner &planner);
-    double extendSearchRange;
 
     Part getClosestPart();
-    Parts getCloseParts();
+    PartList getClosestPartList();
     Part getClosestPartBest();
-    Parts getClosePartsBest();
+    PartList getClosePartListBest();
 
 private:
     ros::NodeHandle nh_;

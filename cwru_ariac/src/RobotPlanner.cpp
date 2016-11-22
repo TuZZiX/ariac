@@ -58,7 +58,7 @@ bool RobotPlanner::waitForGripperAttach(double timeout) {
         grab();
         ros::Duration(0.8).sleep();
         ros::spinOnce();
-        timeout -= 0.4;
+        timeout -= 1.0;
     }
     return attached;
 }
@@ -67,6 +67,7 @@ bool RobotPlanner::planPose(geometry_msgs::PoseStamped pose) {
     // TODO
     lastPlanningTime = rand()/RAND_MAX;
     lastExecutingTime = (rand()/RAND_MAX)*6;
+    ros::spinOnce();
     return true;
 }
 
@@ -74,6 +75,7 @@ bool RobotPlanner::planPart(Part part) {
     // TODO
     lastPlanningTime = rand()/RAND_MAX;
     lastExecutingTime = (rand()/RAND_MAX)*6;
+    ros::spinOnce();
     return true;
 }
 
@@ -81,10 +83,37 @@ bool RobotPlanner::planToHome() {
     // TODO
     lastPlanningTime = rand()/RAND_MAX;
     lastExecutingTime = (rand()/RAND_MAX)*6;
+    ros::spinOnce();
+    return true;
+}
+
+bool RobotPlanner::pick(Part part) {
+    // TODO
+    lastPlanningTime = rand()/RAND_MAX;
+    lastExecutingTime = (rand()/RAND_MAX)*6;
+    ros::spinOnce();
+    return true;
+}
+
+bool RobotPlanner::place(geometry_msgs::PoseStamped destination) {
+    // TODO
+    lastPlanningTime = rand()/RAND_MAX;
+    lastExecutingTime = (rand()/RAND_MAX)*6;
+    ros::spinOnce();
+    return true;
+}
+
+bool RobotPlanner::move(Part part, geometry_msgs::PoseStamped destination) {
+    // TODO
+    lastPlanningTime = rand()/RAND_MAX;
+    lastExecutingTime = (rand()/RAND_MAX)*6;
+    ros::spinOnce();
     return true;
 }
 
 bool RobotPlanner::executeLastPlan() {
+    //TODO
+    ros::spinOnce();
     return true;
 }
 
@@ -93,10 +122,7 @@ void RobotPlanner::sendJointsValue(vector<double> joints) {
     msg.header.stamp = ros::Time::now();
     msg.joint_names = current_joint_states.name;
     msg.points.resize(1);
-    msg.points[0].positions.resize(current_joint_states.name.size(), 0.0);
-    for (int i = 0; i < joints.size(); ++i) {
-        msg.points[0].positions[i] = joints[i];
-    }
+    msg.points[0].positions = joints;
     msg.points[0].time_from_start = ros::Duration(arrivalTime);
     ROS_INFO_STREAM("Sending command:\n" << msg);
     joint_trajectory_publisher.publish(msg);

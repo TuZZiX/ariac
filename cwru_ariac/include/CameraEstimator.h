@@ -7,19 +7,21 @@
 
 #include <AriacBase.h>
 
+
 class CameraEstimator: public AriacBase {
 public:
     double distanceTolerance;
     double untraceableTolerance;
-    Parts inView;
-    Parts onGround;
-    Parts onConveyor;
-    Parts onAGV[totalAGVs];
-    Parts onBin[totalBins];
+    PartSet inView;
+    PartList onGround;
+    PartList onConveyor;
+    vector<PartList> onAGV;
+    vector<PartList> onBin;
     string worldFrame;
     string cameraFrame;
     CameraEstimator(ros::NodeHandle nodeHandle, string cameraTopic = "/ariac/logical_camera_1");
     void waitForUpdate();
+    int getMaxID() { return assignedID; }
 
 private:
     ros::NodeHandle nh_;
@@ -29,7 +31,7 @@ private:
     tf::TransformListener tf_listener;
     tf::StampedTransform transform;
     ros::Time lastTime;
-    int assigndID;
+    int assignedID;
     int updateCount;
     int checkedCount;
 };

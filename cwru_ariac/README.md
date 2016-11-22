@@ -2,7 +2,7 @@
 
 Overall structure see here:
 ```
-            ←←←←←CameraEstimator
+          ←←←←←←←CameraEstimator
           ↓            ↓
           ↓      ConveyorManager
           ↓            ↓
@@ -66,4 +66,7 @@ Optional args:
 `rosrun cwru_ariac pose_tunner`: a tool for change joints values arbitrary, with joint value feedback. 
 
 `rosrun cwru_ariac pick_and_place_demo`: a dumb demo for pick and place part, will failed occasionally.
+
+`rosrun cwru_ariac camera_tester [part_id]`: a test for keep tracking a single part, note each part have been assigned a positive integer as its own part id. 
+For example, you can try `rosrun cwru_ariac camera_tester 55` or `rosrun cwru_ariac camera_tester 110 # and start the competition`
     
