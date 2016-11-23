@@ -117,7 +117,7 @@ void CameraEstimator::splitLocation() {
     }
     onGround.clear();
     for (auto part: inView) {
-        if ((ConveyorBoundBoxXmin<=part.pose.pose.position.x && part.pose.pose.position.x<=ConveyorBoundBoxXmax) && (ConveyorBoundBoxYmin <= part.pose.pose.position.y && part.pose.pose.position.y <= ConveyorBoundBoxYmax)) {
+        if (checkBound(part.pose.pose.position, conveyorBoundBox)) {
 //            if (!part.traceable){
 //                part.traceable = true;
 //                part.linear.x = 0;
@@ -129,7 +129,7 @@ void CameraEstimator::splitLocation() {
         }
         bool jump = false;
         for (int j = 0; j < onAGV.size(); ++j) {
-            if (AGVBoundBoxXmin[j]<=part.pose.pose.position.x && part.pose.pose.position.x<=AGVBoundBoxXmax[j] && AGVBoundBoxYmin[j] <= part.pose.pose.position.y && part.pose.pose.position.y <= AGVBoundBoxYmax[j]) {
+            if (checkBound(part.pose.pose.position, agvs[j].bound)) {
                 onAGV[j].push_back(part);
                 jump = true;
                 break;
@@ -138,7 +138,8 @@ void CameraEstimator::splitLocation() {
         if (jump)
             continue;
         for (int j = 0; j < onBin.size(); ++j) {
-            if (BinBoundBoxXmin[j]<=part.pose.pose.position.x && part.pose.pose.position.x<=BinBoundBoxXmax[j] || BinBoundBoxYmin[j] <= part.pose.pose.position.y && part.pose.pose.position.y <= BinBoundBoxYmax[j]) {
+            // TODO
+            if (checkBound(part.pose.pose.position, defaultBin.bound)) {
                 onBin[j].push_back(part);
                 jump = true;
                 break;

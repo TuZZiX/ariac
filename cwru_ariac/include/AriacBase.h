@@ -91,23 +91,7 @@ protected:
     unordered_map<string, PartType> defaultParts;
     Bin defaultBin;
     vector<AGV> agvs;
-    vector<vector<double>> AGVBaseCoordinate;
-
-    double AGVBoundBoxXmin[totalAGVs];
-    double AGVBoundBoxYmin[totalAGVs];
-    double AGVBoundBoxXmax[totalAGVs];
-    double AGVBoundBoxYmax[totalAGVs];
-
-    double ConveyorBoundBoxXmin;
-    double ConveyorBoundBoxYmin;
-    double ConveyorBoundBoxXmax;
-    double ConveyorBoundBoxYmax;
-
-    double BinBoundBoxXmin[totalBins];
-    double BinBoundBoxYmin[totalBins];
-    double BinBoundBoxXmax[totalBins];
-    double BinBoundBoxYmax[totalBins];
-
+    BoundBox conveyorBoundBox;
 
     AriacBase() {
         defaultBin.name = "Bin";
@@ -116,32 +100,20 @@ protected:
         defaultBin.size.x = 0.6;
         defaultBin.size.y = 0.6;
 
-        AGVBaseCoordinate.resize(3);
-        AGVBaseCoordinate[0] = {0.12, 3.46,0.75};
+        agvs[0].basePose.pose.position.x = 0.12;
+        agvs[0].basePose.pose.position.y = 3.46;
+        agvs[0].basePose.pose.position.z = 0.75;
 
-        AGVBoundBoxXmin[0] = 0.0;
-        AGVBoundBoxYmin[0] = 2.7;
-        AGVBoundBoxXmax[0] = 0.7;
-        AGVBoundBoxYmax[0] = 3.9;
+        agvs[0].bound.Xmin = 0.0;
+        agvs[0].bound.Ymin = 2.7;
+        agvs[0].bound.Xmax = 0.7;
+        agvs[0].bound.Ymax = 3.9;
 
-        AGVBoundBoxXmin[1] = 0.0;
-        AGVBoundBoxYmin[1] = 0.0;
-        AGVBoundBoxXmax[1] = 0.0;
-        AGVBoundBoxYmax[1] = 0.0;
+        conveyorBoundBox.Xmin = 0.9;
+        conveyorBoundBox.Ymin = -4.8;
+        conveyorBoundBox.Xmax = 1.6;
+        conveyorBoundBox.Ymax = 5.8;
 
-        ConveyorBoundBoxXmin = 0.9;
-        ConveyorBoundBoxYmin = -4.8;
-        ConveyorBoundBoxXmax = 1.6;
-        ConveyorBoundBoxYmax = 5.8;
-
-        BinBoundBoxXmin[0] = 0.0;
-        BinBoundBoxYmin[0] = 0.0;
-        BinBoundBoxXmax[0] = 0.0;
-        BinBoundBoxYmax[0] = 0.0;
-
-        for (int j = 0; j < totalBins; ++j) {
-
-        }
         PartType singlePart;
         for (int i = 0; i < totalPartsTypes; ++i) {
             singlePart.name = defaultPartsName[i];
@@ -170,6 +142,10 @@ public:
 
     inline double euclideanDistance(geometry_msgs::Point positionA, geometry_msgs::Point positionB) {
         return sqrt(pow(positionA.x - positionB.x, 2) + pow(positionA.y - positionB.y, 2) + pow(positionA.z - positionB.z, 2));
+    }
+
+    inline bool checkBound(geometry_msgs::Point position, BoundBox boundBox) {
+        return (boundBox.Xmin<=position.x && position.x<=boundBox.Xmax) && (boundBox.Ymin <= position.y && position.y <= boundBox.Ymax) && (boundBox.Zmin <= position.z && position.z <= boundBox.Zmax);
     }
 };
 
