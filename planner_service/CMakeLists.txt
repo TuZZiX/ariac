@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(cwru_ariac)
+project(planner_service)
 
 find_package(catkin_simple REQUIRED)
 
@@ -25,22 +25,17 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 # Libraries: uncomment the following and edit arguments to create a new library
-cs_add_library(ServicePlanner src/ServicePlanner.cpp)
-cs_add_library(AriacLib src/RobotPlanner.cpp src/CameraEstimator.cpp src/BinManager.cpp src/ConveyorManager.cpp src/OrderManager.cpp src/Cheater.cpp)
+cs_add_library(RobotPlanner src/RobotPlanner.cpp)
 
 # Executables: uncomment the following and edit arguments to compile new nodes
 # may add more of these lines for more nodes from the same package
-# cs_add_executable(example src/example.cpp)
-cs_add_executable(example_node src/gear_example_node.cpp)
-cs_add_executable(pose_tunner src/pose_tunner.cpp)
-cs_add_executable(camera_tester src/camera_tester.cpp)
-cs_add_executable(pick_and_place_demo src/pick_and_place_demo.cpp)
+cs_add_executable(planner_service src/planner_service.cpp)
+
 #the following is required, if desire to link a node in this package with a library created in this same package
 # edit the arguments to reference the named node and named library within this package
-target_link_libraries(pose_tunner AriacLib)
-target_link_libraries(camera_tester AriacLib)
-target_link_libraries(pick_and_place_demo AriacLib)
+target_link_libraries(planner_service RobotPlanner)
 
 cs_install()
 cs_export()
     
+

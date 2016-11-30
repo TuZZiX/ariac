@@ -16,8 +16,8 @@ public:
     bool executeLastPlan();
 
     bool pick(Part part);
-    bool place(geometry_msgs::PoseStamped destination);
-    bool move(Part part, geometry_msgs::PoseStamped destination);
+    bool place(Part destination);
+    bool move(Part part, Part destination);
     bool estimateMovingPart(Part part, geometry_msgs::PoseStamped &estimatedPose);
 
     void sendJointsValue(vector<double> joints);
@@ -30,7 +30,7 @@ public:
 
     void setMaxPlanningTime(double maxPlanningTime) {this->maxPlanningTime = maxPlanningTime;}
     double getMaxPlanningTime() { return maxPlanningTime;}
-    Eigen::Vector3d getCurrentBasePosition() { return currentBasePosition;}
+    geometry_msgs::Pose getCurrentBasePose() { return currentBasePose;}
     geometry_msgs::Pose getCurrentGripperPose() { return currentGripperPose;}
     double getLastPlanningTime() { return lastPlanningTime;}
     double getLastExecutingTime() { return lastExecutingTime;}
@@ -42,7 +42,7 @@ private:
     double lastPlanningTime;    // must update after each planning
     double lastExecutingTime;   // must update after each planning
     double maxPlanningTime;     // deadline for planning, must return before this time
-    Eigen::Vector3d currentBasePosition;
+    geometry_msgs::Pose currentBasePose;
     geometry_msgs::Pose currentGripperPose;
 
     ros::Publisher joint_trajectory_publisher;

@@ -1,0 +1,28 @@
+int8 type
+cwru_ariac/Part sourcePart
+cwru_ariac/Part targetPart
+float64 timeout
+float64 maxPlanningTime
+
+# type list
+int8 none					= 0
+int8 setMaxPlanningTime   = 10
+int8 planToHome				= 11
+int8 planToPart				= 12
+int8 pickPart				= 13
+int8 placePart				= 14
+int8 planToMovePart			= 15
+---
+bool success
+int8 ERROR_CODE
+float64 planningTime
+float64 executingTime
+
+# ERROR CODE
+int8 NO_ERROR			= 0
+int8 UNKNOWN_ERROR		= 100
+int8 INVALID_TYPE		= 101
+int8 WRONG_PARAMETER	= 102
+int8 PLANNING_TIMEOUT	= 103
+int8 EXECUTING_TIMEOUT	= 104
+int8 UNREACHABLE		= 105
