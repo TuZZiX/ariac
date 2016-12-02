@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>planner_service</name>
+  <name>oracle</name>
   <version>0.0.0</version>
-  <description>The planner_service package</description>
+  <description>The oracle package</description>
   
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

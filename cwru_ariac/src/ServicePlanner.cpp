@@ -3,39 +3,59 @@
 //
 
 #include <AriacBase.h>
-#include <cwru_ariac/RobotPlanQuery.h>
+#include <cwru_ariac/OracleQuery.h>
+#include <cwru_ariac/RobotMoveAction.h>
 
-class ServicePlanner {
+class Oracle {
 public:
-    ServicePlanner(ros::NodeHandle& nodeHandle): nh_(nodeHandle) {
-        gripper = nh_.serviceClient<cwru_ariac::RobotPlanQuery>("/cwru_ariac/planner_service");
+    Oracle(ros::NodeHandle& nodeHandle): nh_(nodeHandle) {
+        oracle = nh_.serviceClient<cwru_ariac::OracleQuery>("/cwru_ariac/oracle");
+        robot = nh_.serviceClient<cwru_ariac::RobotMoveAction>("/cwru_ariac/robot_move");
     }
     bool planToHome() {
-        RobotPlanQueryRequest request;
+        OracleQueryRequest request;
     }
-    bool planPose(geometry_msgs::PoseStamped pose);
-    bool planPart(Part part);
-    bool executeLastPlan();
+    bool pick(Part part, bool move = false) {
 
-    bool pick(Part part);
-    bool place(geometry_msgs::PoseStamped destination);
-    bool move(Part part, geometry_msgs::PoseStamped destination);
-    bool estimateMovingPart(Part part, geometry_msgs::PoseStamped &estimatedPose);
+    }
+    bool place(Part destination, bool move = false) {
 
-    void sendJointsValue(vector<double> joints);
-    vector<double> getJointsState();
-    void grab();
-    void release();
-    osrf_gear::VacuumGripperState getGripperState();
-    bool isGripperAttached();
-    bool waitForGripperAttach(double timeout);
+    }
+    bool move(Part part, Part destination, bool move = false) {
+
+    }
+
+    void sendJointsValue(vector<double> joints) {
+
+    }
+    vector<double> getJointsState() {
+
+    }
+    void grab() {
+
+    }
+    void release() {
+
+    }
+    bool isGripperAttached() {
+
+    }
+    bool waitForGripperAttach(double timeout) {
+
+    }
 
     void setMaxPlanningTime(double maxPlanningTime) {this->maxPlanningTime = maxPlanningTime;}
-    Eigen::Vector3d getCurrentBasePosition() { return currentBasePosition;}
+    geometry_msgs::Pose getCurrentBasePose() { return currentBasePose;}
     geometry_msgs::Pose getCurrentGripperPose() { return currentGripperPose;}
-    double getLastPlanningTime() { return lastPlanningTime;}
-    double getLastExecutingTime() { return lastExecutingTime;}
 
 private:
     ros::NodeHandle nh_;
+    ros::ServiceClient oracle;
+    ros::ServiceClient robot;
+    double maxPlanningTime;
+    OracleQueryRequest request;
+    OracleQueryResponse response;
+
+    geometry_msgs::Pose currentBasePose;
+    geometry_msgs::Pose currentGripperPose;
 };
