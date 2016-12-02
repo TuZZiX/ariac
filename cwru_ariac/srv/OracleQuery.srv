@@ -1,14 +1,16 @@
 int8 type                               # type of this query, specified below
-geometry_msgs/PoseStamped robotPose     # pose of robot, can be a pose in the future
+geometry_msgs/PoseStamped basePose      # start pose of robot base, can be a pose in the future (if robot is performing a action)
+geometry_msgs/PoseStamped gripperPose   # start pose of end effector, can be a pose in the future (if robot is performing a action)
+float64[] jointsState                   # start joints value of robot, use the same stamp as gripperPose and basePose
 cwru_ariac/Part sourcePart              # part to pick or place
 cwru_ariac/Part targetPart              # fake part message that contains pose and location for move
 float64 maxPlanningTime                 # new max planning time, oracle should finish within this time frame
 # type list
 int8 NONE					    = 0     # unused
-int8 SET_MAX_PLANNING_TIME      = 10
-int8 PICK				        = 11    # a collision free plan to pick a part from sourcePart, considering part moving speed, return planning time, executing time and plan id
-int8 PLACE				        = 12    # a collision free plan to place a part from sourcePart, return planning time, executing time and plan id
-int8 MOVE		                = 13    # a collision free plan to place a part from sourcePart to targetPart, return planning time, executing time and plan id
+int8 PICK				        = 10    # a collision free plan to pick a part from sourcePart, considering part moving speed, return planning time, executing time and plan id
+int8 PLACE				        = 11    # a collision free plan to place a part from sourcePart, return planning time, executing time and plan id
+int8 MOVE		                = 12    # a collision free plan to place a part from sourcePart to targetPart, return planning time, executing time and plan id
+int8 SET_MAX_PLANNING_TIME      = 13    # this will be move to param server in the future
 ---
 bool success                            # if success, errorCode will be ignored
 int8 errorCode                          # reason of fault, specified below
@@ -20,5 +22,5 @@ float64 executingTime                   # time estimated for robot move action s
 int8 NO_ERROR			= 0             # default
 int8 UNKNOWN_ERROR		= 100           # all other errors
 int8 INVALID_QUERY		= 101           # type not in list or Part message have error
-int8 PLANNING_TIMEOUT	= 102           # timeout
+int8 TIMEOUT	        = 102           # reach time limit, return with no or partial result
 int8 UNREACHABLE		= 103           # out of robot reachable range, considering part moving speed
