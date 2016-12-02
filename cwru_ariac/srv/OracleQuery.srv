@@ -1,28 +1,24 @@
-int8 type
-cwru_ariac/Part sourcePart
-cwru_ariac/Part targetPart
-float64 timeout
-float64 maxPlanningTime
-
+int8 type                               # type of this query, specified below
+geometry_msgs/PoseStamped robotPose     # pose of robot, can be a pose in the future
+cwru_ariac/Part sourcePart              # part to pick or place
+cwru_ariac/Part targetPart              # fake part message that contains pose and location for move
+float64 maxPlanningTime                 # new max planning time, oracle should finish within this time frame
 # type list
-int8 none					= 0
-int8 setMaxPlanningTime   = 10
-int8 planToHome				= 11
-int8 planToPart				= 12
-int8 pickPart				= 13
-int8 placePart				= 14
-int8 planToMovePart			= 15
+int8 NONE					    = 0     # unused
+int8 SET_MAX_PLANNING_TIME      = 10
+int8 PICK				        = 11    # a collision free plan to pick a part from sourcePart, considering part moving speed, return planning time, executing time and plan id
+int8 PLACE				        = 12    # a collision free plan to place a part from sourcePart, return planning time, executing time and plan id
+int8 MOVE		                = 13    # a collision free plan to place a part from sourcePart to targetPart, return planning time, executing time and plan id
 ---
-bool success
-int8 ERROR_CODE
-float64 planningTime
-float64 executingTime
+bool success                            # if success, errorCode will be ignored
+int8 errorCode                          # reason of fault, specified below
+int32 planID                            # id of this query, can be used for robot move action server to lookup for specific plan and execute, not used currently
+float64 planningTime                    # elapsed time for doing this planning
+float64 executingTime                   # time estimated for robot move action server to execute this plan
 
 # ERROR CODE
-int8 NO_ERROR			= 0
-int8 UNKNOWN_ERROR		= 100
-int8 INVALID_TYPE		= 101
-int8 WRONG_PARAMETER	= 102
-int8 PLANNING_TIMEOUT	= 103
-int8 EXECUTING_TIMEOUT	= 104
-int8 UNREACHABLE		= 105
+int8 NO_ERROR			= 0             # default
+int8 UNKNOWN_ERROR		= 100           # all other errors
+int8 INVALID_QUERY		= 101           # type not in list or Part message have error
+int8 PLANNING_TIMEOUT	= 102           # timeout
+int8 UNREACHABLE		= 103           # out of robot reachable range, considering part moving speed
