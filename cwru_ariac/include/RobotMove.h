@@ -7,11 +7,10 @@
 
 
 #include <AriacBase.h>
-#include <cwru_ariac/RobotMoveAction.h>
 
 class RobotMove {
 public:
-    OraclePlanner(ros::NodeHandle& nodeHandle);
+    RobotMove(ros::NodeHandle& nodeHandle);
     bool planToHome();
     bool pick(Part part, bool move = false);
     bool place(Part destination, bool move = false);
@@ -23,8 +22,7 @@ public:
     bool isGripperAttached();
     bool waitForGripperAttach(double timeout);
     void setMaxPlanningTime(double maxPlanningTime) {this->maxPlanningTime = maxPlanningTime;}
-    geometry_msgs::Pose getCurrentBasePose() { return currentBasePose;}
-    geometry_msgs::Pose getCurrentGripperPose() { return currentGripperPose;}
+    bool getRobotState(RobotState robotState);
 
 private:
     ros::NodeHandle nh_;

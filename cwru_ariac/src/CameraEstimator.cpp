@@ -129,7 +129,7 @@ void CameraEstimator::splitLocation() {
         }
         bool jump = false;
         for (int j = 0; j < onAGV.size(); ++j) {
-            if (checkBound(part.pose.pose.position, agvs[j].bound)) {
+            if (checkBound(part.pose.pose.position, agvBoundBox[j])) {
                 onAGV[j].push_back(part);
                 jump = true;
                 break;

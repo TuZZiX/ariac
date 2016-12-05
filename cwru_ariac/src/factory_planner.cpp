@@ -45,8 +45,10 @@ int main(int argc, char** argv) {
                                     binParts.push_back(item);
                                 }
                             }
-                            state = FILL_ORDER;
-                            break;
+                            if (conveyorParts.size()!=0 || binParts.size() != 0) {
+                                state = FILL_ORDER;
+                                break;
+                            }
                         }
                         if (state == FILL_ORDER)
                             break;

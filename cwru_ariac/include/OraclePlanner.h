@@ -6,22 +6,22 @@
 #define CWRU_ARIAC_ORACLEPLANNER_H
 
 #include <AriacBase.h>
-#include <cwru_ariac/OracleQuery.h>
 
 class OraclePlanner {
 public:
     OraclePlanner(ros::NodeHandle& nodeHandle);
-    bool pick(Part part, bool move = false);
-    bool place(Part destination, bool move = false);
-    bool move(Part part, Part destination, bool move = false);
-    bool setMaxPlanningTime(double maxPlanningTime);
+    bool pick(Part part, RobotState robotState, double &planningTime = _fakeDouble, double &executingTime = _fakeDouble, int &errorCode = _fakeInt, int &planID = _fakeInt);
+    bool place(Part destination, RobotState robotState, double &planningTime = _fakeDouble, double &executingTime = _fakeDouble, int &errorCode = _fakeInt, int &planID = _fakeInt);
+    bool move(Part part, Part destination, RobotState robotState, double &planningTime = _fakeDouble, double &executingTime = _fakeDouble, int &errorCode = _fakeInt, int &planID = _fakeInt);
+    bool setMaxPlanningTime(double maxPlanningTime, int &errorCode = _fakeInt);
     double getMaxPlanningTime() {return maxPlanningTime;}
 
 private:
     ros::NodeHandle nh_;
     ros::ServiceClient oracle;
     double maxPlanningTime;
-    OracleQueryRequest request;
-    OracleQueryResponse response;
+
+    static double _fakeDouble;   // declared for default parameter, please ignore
+    static int _fakeInt;         // declared for default parameter, please ignore
 };
 #endif //CWRU_ARIAC_ORACLEPLANNER_H

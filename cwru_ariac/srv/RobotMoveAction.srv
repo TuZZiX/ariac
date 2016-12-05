@@ -4,6 +4,7 @@ cwru_ariac/Part sourcePart				# part to pick or place
 cwru_ariac/Part targetPart				# fake part message that contains pose and location for move
 float64[] jointsValue					# new joint value to be published
 float64 timeout						 	# time limit for perform any move action, <=0 means no limit
+
 # type list
 int8 NONE						= 0	 	# unused
 int8 PICK						= 10	# input: planID, sourcePart (from), timeout; output: success, errorCode, basePose (after finished this movement), gripperPose (after finished this movement), jointsState (after finished this movement)
@@ -11,19 +12,16 @@ int8 PLACE						= 11	# input: planID, sourcePart (to), timeout; output: success,
 int8 MOVE						= 12	# input: planID, sourcePart (from), targetPart (to), timeout; output: success, errorCode, basePose (after finished this movement), gripperPose (after finished this movement), jointsState (after finished this movement)
 int8 TO_HOME					= 13	# input: timeout; output: success, errorCode, basePose (after finished this movement), gripperPose (after finished this movement), jointsState (after finished this movement)
 int8 SET_JOINT_VALUE			= 15	# input: jointsValue, timeout; output: success, errorCode, basePose (after finished this movement), gripperPose (after finished this movement), jointsState (after finished this movement)
-int8 GET_JOINT_VALUE			= 16	# input: (none); output: success, jointsState (current time)
+int8 GET_ROBOT_STATE			= 16	# input: (none); output: success, robotState (current time)
 int8 GRASP						= 17	# input: (none); output: success, errorCode
 int8 RELEASE					= 18	# input: (none); output: success, errorCode
 int8 IS_ATTACHED				= 19	# input: (none); output: success (true means attached)
 int8 WAIT_FOR_ATTACHED			= 20	# input: timeout; output: success, errorCode
-int8 GET_GRIPPER_POSE			= 21	# input: (none); output: success, gripperPose
-int8 GET_BASE_POSE				= 22	# input: (none); output: success, basePose
 ---
 bool success							# success or bool result, if success, errorCode will be ignored
 int8 errorCode							# reason of fault, specified below
-geometry_msgs/PoseStamped basePose		# pose of robot base, equal to current base pose when GET_BASE_POSE, or the base pose when finished executing in other case
-geometry_msgs/PoseStamped gripperPose	# pose of end effector, equal to current end effector pose when GET_GRIPPER_POSE, or the end effector pose when finished executing in other case
-float64[] jointsState					# joints value of robot, equal to current base pose when GET_JOINT_VALUE, or the joints state when finished executing in other case
+cwru_ariac/RobotState robotState        # robot state after finish execute current command or current robot state
+
 # ERROR CODE
 int8 NO_ERROR			= 0				# default
 int8 UNKNOWN_ERROR		= 100			# all other errors

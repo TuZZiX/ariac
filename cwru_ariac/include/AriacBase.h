@@ -47,6 +47,9 @@
 #include <cwru_ariac/Part.h>
 #include <cwru_ariac/Parts.h>
 #include <cwru_ariac/PartType.h>
+#include <cwru_ariac/RobotState.h>
+#include <cwru_ariac/RobotMoveAction.h>
+#include <cwru_ariac/OracleQuery.h>
 
 using namespace std;
 using namespace Eigen;
@@ -113,7 +116,7 @@ class AriacBase {
 protected:
     unordered_map<string, PartType> defaultParts;
     Bin defaultBin;
-    vector<AGV> agvs;
+    BoundBox agvBoundBox[totalAGVs];
     BoundBox conveyorBoundBox;
 
     AriacBase() {
@@ -123,14 +126,10 @@ protected:
         defaultBin.size.x = 0.6;
         defaultBin.size.y = 0.6;
 
-        agvs[0].basePose.pose.position.x = 0.12;
-        agvs[0].basePose.pose.position.y = 3.46;
-        agvs[0].basePose.pose.position.z = 0.75;
-
-        agvs[0].bound.Xmin = 0.0;
-        agvs[0].bound.Ymin = 2.7;
-        agvs[0].bound.Xmax = 0.7;
-        agvs[0].bound.Ymax = 3.9;
+        agvBoundBox[0].Xmin = 0.0;
+        agvBoundBox[0].Ymin = 2.7;
+        agvBoundBox[0].Xmax = 0.7;
+        agvBoundBox[0].Ymax = 3.9;
 
         conveyorBoundBox.Xmin = 0.9;
         conveyorBoundBox.Ymin = -4.8;
