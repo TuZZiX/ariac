@@ -6,7 +6,6 @@
 #define CWRU_ARIAC_BINMANAGER_H
 
 #include <AriacBase.h>
-#include <CameraEstimator.h>
 
 
 class BinManage: public AriacBase {

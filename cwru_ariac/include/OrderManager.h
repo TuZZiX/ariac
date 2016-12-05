@@ -25,7 +25,6 @@ public:
     double getCurrentScore() {
         return score;
     }
-
     double scoreFunction(double TC, double TT);
 
 private:

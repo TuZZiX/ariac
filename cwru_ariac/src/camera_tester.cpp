@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     ConveyorManager conveyor(nh, camera, robot);
     while (ros::ok()) {
         camera.waitForUpdate();
-        auto part = camera.findPart(camera.inView, index);
+        auto part = findPart(camera.inView, index);
         if (part != camera.inView.end()) {
             cout << "Id: " << part->id << endl
                  << "Name: " << part->name << endl

@@ -6,4 +6,4 @@ cwru_ariac/Parts container
 cwru_ariac/PartType allowedType
 geometry_msgs/Pose[] allowedPose
 cwru_ariac/BoundBox bound
-int32 priority
+float64 priority

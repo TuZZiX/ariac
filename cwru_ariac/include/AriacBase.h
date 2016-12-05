@@ -85,6 +85,29 @@ const double averageCost = 1000;
 const string defaultPartsName[totalPartsTypes] = {"piston_rod_part", "gear_part", "pulley_part", "gasket_part", "part1", "part2", "part3", "part4"};
 const double defaultPartsSize[totalPartsTypes][2] = {{0.059,0.052}, {0.078425,0.078425}, {0.23392,0.23392}, {0.31442,0.15684}, {0.3,0.1}, {0.06,0.015}, {0.13,0.07}, {0.09,0.06}};
 
+// simple template find part by id
+template<typename T> inline typename T::iterator findPart(T& parts, int id) {
+    return find_if(parts.begin(), parts.end(), [id](Part p){return p.id == id;});
+}
+// simple template find parts by type
+template<typename T> inline PartList findPart(T& parts, string type) {
+    PartList result;
+    for (auto p: parts) {
+        if(p.name == type){
+            result.push_back(p);
+        }
+    }
+    return result;
+}
+
+inline double euclideanDistance(geometry_msgs::Point positionA, geometry_msgs::Point positionB) {
+    return sqrt(pow(positionA.x - positionB.x, 2) + pow(positionA.y - positionB.y, 2) + pow(positionA.z - positionB.z, 2));
+}
+
+inline bool checkBound(geometry_msgs::Point position, BoundBox boundBox) {
+    return (boundBox.Xmin<=position.x && position.x<=boundBox.Xmax) && (boundBox.Ymin <= position.y && position.y <= boundBox.Ymax) && (boundBox.Zmin <= position.z && position.z <= boundBox.Zmax);
+}
+
 // this class is used to storage some basic information of the competition and common algorithms.
 class AriacBase {
 protected:
@@ -125,28 +148,6 @@ protected:
         }
     }
 public:
-    // simple template find part by id
-    template<typename T> inline typename T::iterator findPart(T& parts, int id) {
-        return find_if(parts.begin(), parts.end(), [id](Part p){return p.id == id;});
-    }
-    // simple template find parts by type
-    template<typename T> inline PartList findPart(T& parts, string type) {
-        PartList result;
-        for (auto p: parts) {
-            if(p.name == type){
-                result.push_back(p);
-            }
-        }
-        return result;
-    }
-
-    inline double euclideanDistance(geometry_msgs::Point positionA, geometry_msgs::Point positionB) {
-        return sqrt(pow(positionA.x - positionB.x, 2) + pow(positionA.y - positionB.y, 2) + pow(positionA.z - positionB.z, 2));
-    }
-
-    inline bool checkBound(geometry_msgs::Point position, BoundBox boundBox) {
-        return (boundBox.Xmin<=position.x && position.x<=boundBox.Xmax) && (boundBox.Ymin <= position.y && position.y <= boundBox.Ymax) && (boundBox.Zmin <= position.z && position.z <= boundBox.Zmax);
-    }
 };
 
 #endif //CWRU_ARIAC_ARIACBASE_H

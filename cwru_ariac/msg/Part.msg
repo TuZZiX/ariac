@@ -4,6 +4,7 @@ int8 traceable
 int8 location
 geometry_msgs/PoseStamped pose
 geometry_msgs/Vector3 linear
+float64 priority
 
 # location list
 int8 none=0
