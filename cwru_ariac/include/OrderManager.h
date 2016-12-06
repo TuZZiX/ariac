@@ -11,13 +11,12 @@ class OrderManager: public AriacBase {
 public:
     OrderManager(ros::NodeHandle nodeHandle);
 
-    const int AGV1 = 1;
-    const int AGV2 = 2;
-
+    vector<AGV> AGVs;
     unordered_map<string, osrf_gear::Goal> orders;
 
+    Part toAGVPart(string agvName, osrf_gear::KitObject object);
     bool startCompetition();
-    bool submitOrder(int AGV, osrf_gear::Kit kit);
+    bool submitOrder(string agvName, osrf_gear::Kit kit);
 
     bool isCompetitionEnd() {
         return (competitionState == "done");

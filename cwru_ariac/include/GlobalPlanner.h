@@ -10,8 +10,6 @@
 class GlobalPlanner {
 public:
     GlobalPlanner(ros::NodeHandle nodeHandle);
-
-    vector<AGV> agvs;
 private:
 };
 

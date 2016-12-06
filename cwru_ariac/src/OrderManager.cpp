@@ -7,13 +7,13 @@
 OrderManager::OrderManager(ros::NodeHandle nodeHandle): nh_(nodeHandle){
     orderSubscriber = nh_.subscribe(
             "/ariac/orders", 10,
-            &OrderManager::orderCallback, this);
+            (void (OrderManager::*)(const osrf_gear::Goal_<std::allocator<void>>::ConstPtr)) &OrderManager::orderCallback, this);
     scoreSubscriber = nh_.subscribe(
             "/ariac/current_score", 10,
-            &OrderManager::scoreCallback, this);
+            (void (OrderManager::*)(const std_msgs::Float32_<std::allocator<void>>::ConstPtr)) &OrderManager::scoreCallback, this);
     competitionStateSubscriber = nh_.subscribe(
             "/ariac/competition_state", 10,
-            &OrderManager::competitionStateCallback, this);
+            (void (OrderManager::*)(const std_msgs::String_<std::allocator<void>>::ConstPtr)) &OrderManager::competitionStateCallback, this);
     AGV1Client =
             nh_.serviceClient<osrf_gear::AGVControl>("/ariac/agv1");
     AGV2Client =
@@ -24,6 +24,18 @@ OrderManager::OrderManager(ros::NodeHandle nodeHandle): nh_(nodeHandle){
     if (!AGV2Client.exists()) {
         AGV2Client.waitForExistence();
     }
+    AGVs[0].name = "AGV1";
+    AGVs[0].state = AGV::READY;
+    AGVs[0].priority = 2.0;
+    AGVs[0].basePose.pose.position.x = 0.12;
+    AGVs[0].basePose.pose.position.y = 3.46;
+    AGVs[0].basePose.pose.position.z = 0.75;
+    AGVs[0].bound = agvBoundBox[0];
+
+    AGVs[1].name = "AGV2";
+    AGVs[1].state = AGV::READY;
+    AGVs[1].priority = 1.0;
+    AGVs[1].bound = agvBoundBox[1];
 }
 
 void OrderManager::orderCallback(const osrf_gear::Goal::ConstPtr &goal_msg) {
@@ -63,20 +75,21 @@ bool OrderManager::startCompetition() {
     return !srv.response.success;
 }
 
-bool OrderManager::submitOrder(int AGV, osrf_gear::Kit kit) {
+bool OrderManager::submitOrder(string agvName, osrf_gear::Kit kit) {
     osrf_gear::AGVControl srv;
     srv.request.kit_type = kit.kit_type;
-    switch (AGV) {
-        case 1:
-            AGV1Client.call(srv);  // Call the start Service.
-            return !srv.response.success;
-        case 2:
-            AGV2Client.call(srv);  // Call the start Service.
-            return !srv.response.success;
-        default:
-            break;
+    if (agvName == AGVs[0].name) {
+        AGV1Client.call(srv);  // Call the start Service.
+        return !srv.response.success;
+    }
+    if (agvName == AGVs[1].name) {
+        AGV2Client.call(srv);  // Call the start Service.
+        return !srv.response.success;
     }
     return false;
+}
+Part OrderManager::toAGVPart(string agvName, osrf_gear::KitObject object) {
+
 }
 double OrderManager::scoreFunction(double TC, double TT) {
     //double TC = 1;

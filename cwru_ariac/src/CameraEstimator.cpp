@@ -2,6 +2,7 @@
 // Created by shipei on 10/19/16.
 //
 
+#include <cwru_ariac/Part.h>
 #include "CameraEstimator.h"
 
 CameraEstimator::CameraEstimator(ros::NodeHandle nodeHandle, string cameraTopic) :
@@ -118,6 +119,7 @@ void CameraEstimator::splitLocation() {
     onGround.clear();
     for (auto part: inView) {
         if (checkBound(part.pose.pose.position, conveyorBoundBox)) {
+            part.location = Part::CONVEYOR;
 //            if (!part.traceable){
 //                part.traceable = true;
 //                part.linear.x = 0;
@@ -130,6 +132,7 @@ void CameraEstimator::splitLocation() {
         bool jump = false;
         for (int j = 0; j < onAGV.size(); ++j) {
             if (checkBound(part.pose.pose.position, agvBoundBox[j])) {
+                part.location = Part::AGV1 + j;
                 onAGV[j].push_back(part);
                 jump = true;
                 break;
@@ -139,7 +142,8 @@ void CameraEstimator::splitLocation() {
             continue;
         for (int j = 0; j < onBin.size(); ++j) {
             // TODO
-            if (checkBound(part.pose.pose.position, defaultBin.bound)) {
+            if (checkBound(part.pose.pose.position, binBoundBox[j])) {
+                part.location = Part::BIN1 + j;
                 onBin[j].push_back(part);
                 jump = true;
                 break;

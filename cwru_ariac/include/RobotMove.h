@@ -12,17 +12,17 @@ class RobotMove {
 public:
     RobotMove(ros::NodeHandle& nodeHandle);
     bool planToHome();
-    bool pick(Part part, bool move = false);
-    bool place(Part destination, bool move = false);
-    bool move(Part part, Part destination, bool move = false);
-    void sendJointsValue(vector<double> joints);
+    bool pick(Part part, double timeout);
+    bool place(Part destination, double timeout);
+    bool move(Part part, Part destination, double timeout);
+    void sendJointsValue(vector<double> joints, double timeout);
     vector<double> getJointsState();
     void grab();
     void release();
     bool isGripperAttached();
     bool waitForGripperAttach(double timeout);
     void setMaxPlanningTime(double maxPlanningTime) {this->maxPlanningTime = maxPlanningTime;}
-    bool getRobotState(RobotState robotState);
+    bool getRobotState(RobotState& robotState);
 
 private:
     ros::NodeHandle nh_;
@@ -34,9 +34,6 @@ private:
 
     geometry_msgs::Pose homePose;
     RobotState currentRobotState;
-
-    static double _fakeDouble;   // declared for default parameter, please ignore
-    static int _fakeInt;         // declared for default parameter, please ignore
 };
 
 

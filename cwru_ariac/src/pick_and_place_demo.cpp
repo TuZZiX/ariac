@@ -71,7 +71,7 @@ int main(int argc, char** argv)
         robotArm.sendJointsValue(my_pose);
         ros::Duration(1.0).sleep();
 
-        comp.submitOrder(comp.AGV1, comp.orders[comp.orders.begin()->first].kits[0]);
+        comp.submitOrder(comp.AGVs[0].name, comp.orders[comp.orders.begin()->first].kits[0]);
         ros::Duration(21.0).sleep();
     }
 

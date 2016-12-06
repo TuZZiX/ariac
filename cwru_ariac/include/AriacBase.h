@@ -77,13 +77,18 @@ namespace cwru_ariac {
 typedef unordered_set<Part> PartSet;  // int is id of the part, Part is part object, using map for fast search
 typedef vector<Part> PartList;
 
+static double _fakeDouble;   // declared for default parameter, please ignore
+static int _fakeInt;         // declared for default parameter, please ignore
+
 const int gridNumber = 60;
 const int totalPartsTypes = 8;
 const int totalAGVs = 2;
 const int totalBins = 8;
 const double averageCost = 1000;
-const string defaultPartsName[totalPartsTypes] = {"piston_rod_part", "gear_part", "pulley_part", "gasket_part", "part1", "part2", "part3", "part4"};
-const double defaultPartsSize[totalPartsTypes][2] = {{0.059,0.052}, {0.078425,0.078425}, {0.23392,0.23392}, {0.31442,0.15684}, {0.3,0.1}, {0.06,0.015}, {0.13,0.07}, {0.09,0.06}};
+const string defaultPartsName[totalPartsTypes] = {"piston_rod_part", "gear_part", "pulley_part", "gasket_part",
+                                                  "part1", "part2", "part3", "part4"};
+const double defaultPartsSize[totalPartsTypes][2] = {{0.059,0.052}, {0.078425,0.078425}, {0.23392,0.23392}, {0.31442,0.15684},
+                                                     {0.3,0.1}, {0.06,0.015}, {0.13,0.07}, {0.09,0.06}};
 
 // simple template find part by id
 template<typename T> inline typename T::iterator findPart(T& parts, int id) {
@@ -100,10 +105,32 @@ template<typename T> inline PartList findPart(T& parts, string type) {
     return result;
 }
 
+template<typename T> inline typename T::iterator findBin(T& bins, int id) {
+    string name = "Bin" + id;
+    return findBinByName(bins, name);
+}
+template<typename T> inline typename T::iterator findBin(T& bins, string name) {
+    return find_if(bins.begin(), bins.end(), [name](Bin bin){return bin.name == name;});
+}
+inline string locationToName(int32_t location) {
+    if (location == Part::UNASSIGNED)
+        return string("unassigned");
+    if (location == Part::CAMERA)
+        return string("camera");
+    if (location == Part::CONVEYOR)
+        return string("conveyor");
+    if (location == Part::GROUND)
+        return string("ground");
+    if (location >= Part::AGV && location < Part::BIN)
+        return string("AGV") + to_string(location - Part::AGV);
+    if (location >= Part::BIN && location <= Part::BIN8)
+        return string("BIN") + to_string(location - Part::BIN);
+    return string("unassigned");
+}
+
 inline double euclideanDistance(geometry_msgs::Point positionA, geometry_msgs::Point positionB) {
     return sqrt(pow(positionA.x - positionB.x, 2) + pow(positionA.y - positionB.y, 2) + pow(positionA.z - positionB.z, 2));
 }
-
 inline bool checkBound(geometry_msgs::Point position, BoundBox boundBox) {
     return (boundBox.Xmin<=position.x && position.x<=boundBox.Xmax) && (boundBox.Ymin <= position.y && position.y <= boundBox.Ymax) && (boundBox.Zmin <= position.z && position.z <= boundBox.Zmax);
 }
@@ -113,6 +140,7 @@ class AriacBase {
 protected:
     unordered_map<string, PartType> defaultParts;
     Bin defaultBin;
+    BoundBox binBoundBox[totalBins];
     BoundBox agvBoundBox[totalAGVs];
     BoundBox conveyorBoundBox;
 

@@ -6,14 +6,13 @@
 #define CWRU_ARIAC_ROBOTPLANNER_H
 
 #include <AriacBase.h>
-#include <cwru_ariac/OracleQuery.h>
 
 class Planner {
 public:
     Planner(ros::NodeHandle& nodeHandle);
-    bool pick(Part part, double &planningTime = fakeDouble, double &executingTime = fakeDouble, int &errorCode = fakeInt, int &planID = fakeInt);
-    bool place(Part destination, double &planningTime = fakeDouble, double &executingTime = fakeDouble, int &errorCode = fakeInt, int &planID = fakeInt);
-    bool move(Part part, Part destination, double &planningTime = fakeDouble, double &executingTime = fakeDouble, int &errorCode = fakeInt, int &planID = fakeInt);
+    bool pick(Part part, double &planningTime = _fakeDouble, double &executingTime = _fakeDouble, int &errorCode = _fakeInt, int &planID = _fakeInt);
+    bool place(Part destination, double &planningTime = _fakeDouble, double &executingTime = _fakeDouble, int &errorCode = _fakeInt, int &planID = _fakeInt);
+    bool move(Part part, Part destination, double &planningTime = _fakeDouble, double &executingTime = _fakeDouble, int &errorCode = _fakeInt, int &planID = _fakeInt);
     bool estimateMovingPart(Part part, geometry_msgs::PoseStamped &estimatedPose);
     vector<double> getJointsState();
 
@@ -32,9 +31,6 @@ private:
     double arrivalTime;
     double approachTimes;
     double approachAheadTime;
-
-    static double fakeDouble;   // declared for default parameter, please ignore
-    static int fakeInt;         // declared for default parameter, please ignore
 
     void jointStateCallback(const sensor_msgs::JointState::ConstPtr &joint_state_msg);
 };

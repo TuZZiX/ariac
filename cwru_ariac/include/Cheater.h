@@ -11,7 +11,7 @@
 #include <osrf_gear/PopulationControl.h>
 #include <osrf_gear/PopulationState.h>
 
-class Cheater: public AriacBase {
+class Cheater {
 public:
     Cheater(ros::NodeHandle nodeHandle);
     bool setConveyorVelocity(double velocity);

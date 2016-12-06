@@ -20,8 +20,5 @@ private:
     ros::NodeHandle nh_;
     ros::ServiceClient oracle;
     double maxPlanningTime;
-
-    static double _fakeDouble;   // declared for default parameter, please ignore
-    static int _fakeInt;         // declared for default parameter, please ignore
 };
 #endif //CWRU_ARIAC_ORACLEPLANNER_H

@@ -22,7 +22,8 @@ int main(int argc, char** argv) {
         if (part != camera.inView.end()) {
             cout << "Id: " << part->id << endl
                  << "Name: " << part->name << endl
-                 << "Traceable: " << part->traceable << endl;
+                 << "Traceable: " << (part->traceable?"yes":"no")
+                 << "Location: " << part->location << endl;
             ROS_INFO_STREAM("Pose:\n" << part->pose);
             ROS_INFO_STREAM("Linear:\n" << part->linear);
         } else {
