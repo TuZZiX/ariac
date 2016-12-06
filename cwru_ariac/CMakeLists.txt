@@ -25,7 +25,9 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 # Libraries: uncomment the following and edit arguments to create a new library
-cs_add_library(AriacLib src/OraclePlanner.cpp src/RobotPlanner.cpp src/CameraEstimator.cpp src/BinManager.cpp src/ConveyorManager.cpp src/OrderManager.cpp src/Cheater.cpp src/GlobalPlanner.cpp)
+cs_add_library(AriacLib src/OraclePlanner.cpp src/RobotPlanner.cpp src/CameraEstimator.cpp
+        src/BinManager.cpp src/ConveyorManager.cpp src/OrderManager.cpp src/Cheater.cpp
+        src/GlobalPlanner.cpp src/RobotMove.cpp)
 
 # Executables: uncomment the following and edit arguments to compile new nodes
 # may add more of these lines for more nodes from the same package

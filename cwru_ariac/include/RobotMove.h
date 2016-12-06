@@ -33,8 +33,10 @@ private:
     OracleQueryResponse response;
 
     geometry_msgs::Pose homePose;
-    geometry_msgs::Pose currentBasePose;
-    geometry_msgs::Pose currentGripperPose;
+    RobotState currentRobotState;
+
+    static double _fakeDouble;   // declared for default parameter, please ignore
+    static int _fakeInt;         // declared for default parameter, please ignore
 };
 
 

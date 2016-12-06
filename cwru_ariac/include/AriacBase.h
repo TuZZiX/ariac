@@ -10,14 +10,12 @@
 
 #include <ros/ros.h>
 #include <iostream>
-#include <math.h>
 #include <cmath>
 #include <algorithm>
 #include <vector>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <boost/functional/hash.hpp>
 
 #include <eigen3/Eigen/Eigen>
 #include <eigen3/Eigen/Dense>
@@ -55,8 +53,6 @@ using namespace std;
 using namespace Eigen;
 using namespace cwru_ariac;
 
-const int gridNumber = 60;
-
 // overlaod hash function for Part to use unordered set
 namespace std {
     template <> struct hash<Part>
@@ -81,6 +77,7 @@ namespace cwru_ariac {
 typedef unordered_set<Part> PartSet;  // int is id of the part, Part is part object, using map for fast search
 typedef vector<Part> PartList;
 
+const int gridNumber = 60;
 const int totalPartsTypes = 8;
 const int totalAGVs = 2;
 const int totalBins = 8;

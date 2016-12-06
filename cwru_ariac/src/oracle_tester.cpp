@@ -6,7 +6,7 @@
 #include <OraclePlanner.h>
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "factory_planner");
+    ros::init(argc, argv, "oracle_tester");
     ros::NodeHandle nh;
     OraclePlanner oraclePlanner(nh);
     return 0;
