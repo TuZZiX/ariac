@@ -1,6 +1,0 @@
-std_msgs/String tray_id
-std_msgs/String kit_type
-
----
-bool success
-float32 inspection_result
