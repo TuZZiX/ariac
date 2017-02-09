@@ -28,9 +28,9 @@ import yaml
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 template_files = [
-    os.path.join(this_dir, '..', '..', 'share', 'osrf_gear', 'worlds', 'gear.world.template'),
-    os.path.join(this_dir, '..', '..', 'share', 'osrf_gear', 'launch', 'gear.launch.template'),
-    os.path.join(this_dir, '..', '..', 'share', 'osrf_gear', 'launch', 'gear.urdf.xacro.template'),
+    os.path.join(this_dir, '..', '..', 'osrf_gear', 'worlds', 'gear.world.template'),
+    os.path.join(this_dir, '..', '..', 'osrf_gear', 'launch', 'gear.launch.template'),
+    os.path.join(this_dir, '..', '..', 'osrf_gear', 'launch', 'gear.urdf.xacro.template'),
 ]
 arm_configs = {
     'ur10': {

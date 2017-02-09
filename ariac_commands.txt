@@ -26,3 +26,10 @@ rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/comp_conf2.yaml `ros
 rosrun cwru_ariac gear_example_node
 
 rosrun cwru_ariac pose_tunner
+
+roslaunch ur10_moveit_config moveit_rviz.launch config:=true
+
+rosrun rviz rviz -d `rospack find osrf_gear`/rviz/ariarviz
+
+rosrun osrf_gear gear.py -f `rospack find osrf_gear`/config/sample.yaml
+
