@@ -58,9 +58,7 @@ int main(int argc, char** argv)
 
     while (ros::ok()) {
         my_pose.resize(current_joint_states.name.size(), 0.0);
-        for (int i = 0; i < my_pose.size(); ++i) {
-            my_pose = current_joint_states.position;
-        }
+        my_pose = current_joint_states.position;
         ROS_WARN("Current joints: {\n    [0]%s:\t\t\t%f, \n    [1]%s:\t%f, \n    [2]%s:\t\t%f, \n    [3]%s:\t\t%f, \n"
                          "    [4]%s:\t\t\t%f, \n    [5]%s:\t\t\t%f, \n    [6]%s:\t\t\t%f}",
                  current_joint_states.name[0].c_str(), my_pose[0], current_joint_states.name[1].c_str(), my_pose[1],

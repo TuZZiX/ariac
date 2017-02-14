@@ -15,7 +15,7 @@ CameraEstimator::CameraEstimator(ros::NodeHandle nodeHandle, string cameraTopic)
     updateCount = 0;
     checkedCount = 0;
     worldFrame = "/world";
-    cameraFrame = "/logical_camera_1_frame";
+    cameraFrame = cameraTopic.substr(cameraTopic.find_last_of("/")) + "_frame";
     //tf_listener.waitForTransform(cameraFrame, worldFrame, ros::Time(0), ros::Duration(2.0));
 }
 
@@ -30,8 +30,10 @@ void CameraEstimator::cameraCallback(const osrf_gear::LogicalCameraImage::ConstP
         part.pose.pose.position.z += part.linear.z * dt;
         part.pose.header.stamp = ros::Time::now();
     }
+    lastTime.fromSec(currentTime.toSec());
+    updateCount++;
     // TODO refactor to: match all exist object first, then all untraceable object then add new object
-    //ROS_INFO("inView: %d, size: %d, dt = %f",(int)inView.size(), (int)image_msg->models.size(), (float)dt);
+//    ROS_INFO("inView: %d, size: %d, dt = %f",(int)inView.size(), (int)image_msg->models.size(), (float)dt);
     for (int i = 0; i < image_msg->models.size(); ++i) {
         geometry_msgs::PoseStamped inPose;
         geometry_msgs::PoseStamped outPose;
@@ -105,8 +107,6 @@ void CameraEstimator::cameraCallback(const osrf_gear::LogicalCameraImage::ConstP
 //    }
     inView.swap(updateView);
     splitLocation();
-    lastTime = currentTime;
-    updateCount++;
 }
 void CameraEstimator::splitLocation() {
     onConveyor.clear();

@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     }
     ros::init(argc, argv, "camera_tester");
     ros::NodeHandle nh;
-    CameraEstimator camera(nh);
+    CameraEstimator camera(nh, "/ariac/logical_camera");
     RobotPlanner robot(nh);
     ConveyorManager conveyor(nh, camera, robot);
     while (ros::ok()) {
