@@ -1,19 +1,20 @@
-syntax: glob
-*~
 build
-build_*
-.DS_Store
-*.swp
-gear.sublime-*
+install
+devel
 
 #repos
 .git
-*/.git
-*/.git*
 
 #clion
 .idea
-*/.idea
+
+#cmake
+cmake-build-debug
+gtest
+CMakeFiles
+catkin_generated
+catkin
+cmake
 
 #vim
 */.#*
@@ -22,3 +23,5 @@ gear.sublime-*
 #temp files
 *~
 .*~
+default_warehouse_mongo_db
+

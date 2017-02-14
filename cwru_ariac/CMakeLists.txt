@@ -32,7 +32,6 @@ cs_add_library(AriacLib src/OraclePlanner.cpp src/RobotPlanner.cpp src/CameraEst
 # Executables: uncomment the following and edit arguments to compile new nodes
 # may add more of these lines for more nodes from the same package
 # cs_add_executable(example src/example.cpp)
-cs_add_executable(example_node src/gear_example_node.cpp)
 cs_add_executable(pose_tunner src/pose_tunner.cpp)
 cs_add_executable(camera_tester src/camera_tester.cpp)
 cs_add_executable(pick_and_place_demo src/pick_and_place_demo.cpp)

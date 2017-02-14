@@ -6,14 +6,11 @@
 
 OrderManager::OrderManager(ros::NodeHandle nodeHandle): nh_(nodeHandle){
     orderSubscriber = nh_.subscribe(
-            "/ariac/orders", 10,
-            (void (OrderManager::*)(const osrf_gear::Goal_<std::allocator<void>>::ConstPtr)) &OrderManager::orderCallback, this);
+            "/ariac/orders", 10, &OrderManager::orderCallback, this);
     scoreSubscriber = nh_.subscribe(
-            "/ariac/current_score", 10,
-            (void (OrderManager::*)(const std_msgs::Float32_<std::allocator<void>>::ConstPtr)) &OrderManager::scoreCallback, this);
+            "/ariac/current_score", 10, &OrderManager::scoreCallback, this);
     competitionStateSubscriber = nh_.subscribe(
-            "/ariac/competition_state", 10,
-            (void (OrderManager::*)(const std_msgs::String_<std::allocator<void>>::ConstPtr)) &OrderManager::competitionStateCallback, this);
+            "/ariac/competition_state", 10, &OrderManager::competitionStateCallback, this);
     AGV1Client =
             nh_.serviceClient<osrf_gear::AGVControl>("/ariac/agv1");
     AGV2Client =
@@ -38,10 +35,10 @@ OrderManager::OrderManager(ros::NodeHandle nodeHandle): nh_(nodeHandle){
     AGVs[1].bound = agvBoundBox[1];
 }
 
-void OrderManager::orderCallback(const osrf_gear::Goal::ConstPtr &goal_msg) {
-    if (orders.find(goal_msg->goal_id.data) == orders.end()) {
-        orders.insert(pair<string, osrf_gear::Goal>(goal_msg->goal_id.data, *goal_msg));
-        ROS_INFO_STREAM("Got order :" << *goal_msg);
+void OrderManager::orderCallback(const osrf_gear::Order::ConstPtr &order_msg) {
+    if (orders.find(order_msg->order_id) == orders.end()) {
+        orders.insert(pair<string, osrf_gear::Order>(order_msg->order_id, *order_msg));
+        ROS_INFO_STREAM("Received order:\n" << *order_msg);
     }
 }
 

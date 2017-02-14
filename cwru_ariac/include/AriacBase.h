@@ -26,11 +26,12 @@
 #include <trajectory_msgs/JointTrajectory.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/String.h>
 #include <std_srvs/Trigger.h>
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 
-#include <osrf_gear/Goal.h>
+#include <osrf_gear/Order.h>
 #include <osrf_gear/LogicalCameraImage.h>
 #include <osrf_gear/Proximity.h>
 #include <osrf_gear/AGVControl.h>

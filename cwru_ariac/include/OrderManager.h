@@ -12,7 +12,7 @@ public:
     OrderManager(ros::NodeHandle nodeHandle);
 
     vector<AGV> AGVs;
-    unordered_map<string, osrf_gear::Goal> orders;
+    unordered_map<string, osrf_gear::Order> orders;
 
     Part toAGVPart(string agvName, osrf_gear::KitObject object);
     bool startCompetition();
@@ -36,9 +36,9 @@ private:
     ros::ServiceClient AGV2Client;
     string competitionState;
     double score;
-    void orderCallback(const osrf_gear::Goal::ConstPtr & goal_msg);
-    void scoreCallback(const std_msgs::Float32::ConstPtr & msg);
-    void competitionStateCallback(const std_msgs::String::ConstPtr & msg);
+    void orderCallback(const osrf_gear::Order::ConstPtr &order_msg);
+    void scoreCallback(const std_msgs::Float32::ConstPtr &msg);
+    void competitionStateCallback(const std_msgs::String::ConstPtr &msg);
 };
 
 
